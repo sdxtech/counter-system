@@ -1,6 +1,7 @@
+import Link from "next/link";
 import { LoginForm } from "@/components/login-form";
 
-export default function Home() {
+export default function LoginPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6">
       <section className="w-full max-w-md rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
@@ -14,6 +15,12 @@ export default function Home() {
           </p>
         </div>
         <LoginForm />
+        <Link
+          href="/preview"
+          className="mt-5 block text-center text-sm font-semibold text-[var(--color-primary)]"
+        >
+          Back to dashboard preview
+        </Link>
       </section>
     </main>
   );
