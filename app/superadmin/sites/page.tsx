@@ -2,16 +2,15 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { requireUserRole } from "@/lib/auth/guards";
-import { getSitesAction, deleteSiteAction, seedExampleSitesDev } from "./actions";
+import { getSitesAction } from "./actions";
 import { CreateSiteForm } from "./create-site-form"; // Import the modal tool
+import { DeleteSiteForm } from "./delete-site-form";
 
 export const dynamic = "force-dynamic";
 
 export default async function SiteManagementPage() {
   await requireUserRole(["superadmin"]);
   
-  // Keep your server data flow intact
-  await seedExampleSitesDev();
   const sites = await getSitesAction();
 
   return (
@@ -71,16 +70,7 @@ export default async function SiteManagementPage() {
                       
                       {/* Danger Wipe Action */}
                       <td className="p-4 pr-6 text-right">
-                        <form action={deleteSiteAction} className="inline">
-                          <input type="hidden" name="siteId" value={site.id} />
-                          <button 
-                            type="submit"
-                            onClick={(e) => { if(!confirm("Are you absolutely sure you want to completely remove this deployment site?")) e.preventDefault(); }}
-                            className="text-xs font-bold text-red-600 hover:text-red-700 hover:underline bg-transparent cursor-pointer"
-                          >
-                            Remove
-                          </button>
-                        </form>
+                        <DeleteSiteForm siteId={site.id} />
                       </td>
                     </tr>
                   ))

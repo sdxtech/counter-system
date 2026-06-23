@@ -3,7 +3,7 @@ import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { requireUserRole } from "@/lib/auth/guards";
 import { getUsersAction } from "./actions";
-import { getSitesAction } from "../sites/actions"; // Live database connection
+import { getSitesAction } from "../sites/actions";
 import { UserActions } from "./delete-button"; 
 import { CreateUserForm } from "./create-form"; 
 import { SiteSelect } from "./site-select"; 
@@ -12,10 +12,10 @@ export const dynamic = "force-dynamic";
 
 export default async function UserManagementPage() {
   await requireUserRole(["superadmin"]);
-  
-  // Fetch real-time data rows dynamically from the database
-  const users = await getUsersAction();
-  const dbSites = await getSitesAction();
+  const [users, sites] = await Promise.all([
+    getUsersAction(),
+    getSitesAction(),
+  ]);
 
   return (
     <AppShell title="Account Management" eyebrow="Superadmin">
@@ -37,8 +37,8 @@ export default async function UserManagementPage() {
             </p>
           </div>
           
-          {/* Passing the live database sites array directly */}
-          <CreateUserForm sites={dbSites} />
+          {/* Elegant Pop-up Trigger Element housed cleanly inside top bar */}
+          <CreateUserForm sites={sites} />
         </div>
 
         {/* Full-Width Spacious Data Table */}
@@ -76,7 +76,7 @@ export default async function UserManagementPage() {
                             userId={user.id} 
                             currentSiteId={userSiteId} 
                             currentRole={userRole} 
-                            sites={dbSites} 
+                            sites={sites} 
                           />
                         </td>
 
@@ -85,7 +85,7 @@ export default async function UserManagementPage() {
                             userId={user.id} 
                             currentRole={userRole} 
                             currentSiteId={userSiteId}
-                            sites={dbSites}
+                            sites={sites}
                           />
                         </td>
                       </tr>
