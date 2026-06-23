@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { requireUserRole } from "@/lib/auth/guards";
 import { getUsersAction } from "./actions";
+import { getSitesAction } from "../sites/actions"; // Live database connection
 import { UserActions } from "./delete-button"; 
 import { CreateUserForm } from "./create-form"; 
 import { SiteSelect } from "./site-select"; 
@@ -11,14 +12,10 @@ export const dynamic = "force-dynamic";
 
 export default async function UserManagementPage() {
   await requireUserRole(["superadmin"]);
+  
+  // Fetch real-time data rows dynamically from the database
   const users = await getUsersAction();
-
-  // HARDCODED FALLBACK LOCAL SITES (Bypasses DB for testing)
-  const localTestSites = [
-    { id: "test-id-1", name: "IDAME-CGK" },
-    { id: "test-id-2", name: "IDAME-SUB" },
-    { id: "test-id-3", name: "IDAME-DPS" }
-  ];
+  const dbSites = await getSitesAction();
 
   return (
     <AppShell title="Account Management" eyebrow="Superadmin">
@@ -40,11 +37,11 @@ export default async function UserManagementPage() {
             </p>
           </div>
           
-          {/* Elegant Pop-up Trigger Element housed cleanly inside top bar */}
-          <CreateUserForm sites={localTestSites} />
+          {/* Passing the live database sites array directly */}
+          <CreateUserForm sites={dbSites} />
         </div>
 
-        {/* Clean, Full-Width Spacious Data Table Row */}
+        {/* Full-Width Spacious Data Table */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-sm">
@@ -69,28 +66,26 @@ export default async function UserManagementPage() {
 
                     return (
                       <tr key={user.id} className="hover:bg-slate-50/40 transition-colors group">
-                        {/* Email Column */}
-                        <td className="p-4 pl-6 font-semibold text-slate-900 selection:bg-blue-100">
+                        <td className="p-4 pl-6 font-semibold text-slate-900">
                           {user.email}
                         </td>
                         
-                        {/* Interactive Dropdown Inline Cell */}
+                        {/* Inline Site Picker Cell linked to live DB entries */}
                         <td className="p-4">
                           <SiteSelect 
                             userId={user.id} 
                             currentSiteId={userSiteId} 
                             currentRole={userRole} 
-                            sites={localTestSites} 
+                            sites={dbSites} 
                           />
                         </td>
 
-                        {/* Interactive Role Options Trigger Row */}
                         <td className="p-4 pr-6 text-right">
                           <UserActions 
                             userId={user.id} 
                             currentRole={userRole} 
                             currentSiteId={userSiteId}
-                            sites={localTestSites}
+                            sites={dbSites}
                           />
                         </td>
                       </tr>

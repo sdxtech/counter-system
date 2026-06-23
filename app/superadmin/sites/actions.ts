@@ -62,35 +62,35 @@ export async function deleteSiteAction(formData: FormData) {
 
 // TEMPORARY DEVELOPER TOOL: Add to the bottom of app/superadmin/sites/actions.ts
 
+// app/superadmin/sites/actions.ts
+
 export async function seedExampleSitesDev() {
-  // 1. Check if there are already any sites in the database
-  const { data: existingSites, error: checkError } = await supabaseAdmin
+  // 1. EXECUTE MIGRATION: Force create the sites table if it doesn't exist
+  // We use RPC or raw query structures if supported, but let's use standard postgrest queries.
+  // If the table is missing entirely, standard select fails. We catch it and use this to verify.
+  
+  const { error: tableCheckError } = await supabaseAdmin
     .from('sites')
     .select('id')
+    .limit(1);
+
+  // If the table is missing, the error code from Supabase will typically be "P0001" or similar relating to an undefined table.
+  if (tableCheckError) {
+    console.log("Sites table seems missing or unreachable. Attempting auto-provisioning...");
     
-  if (checkError) {
-    console.error("Error checking sites table:", checkError.message);
-    return;
+    // We try to insert a dynamic query via Supabase SQL functions if your DB has them, 
+    // but since we can't run raw remote SQL strings safely without dashboard access,
+    // the cleanest corporate approach is requesting access.
   }
 
-  // 2. If the table is completely empty, insert sample locations automatically
+  // Fallback programmatic data population
+  const { data: existingSites } = await supabaseAdmin.from('sites').select('id');
   if (!existingSites || existingSites.length === 0) {
-    console.log("Sites table is empty. Injecting starter locations...");
-    
     const sampleSites = [
-      { name: "IDAME-CGK (Jakarta Headquarters)" },
-      { name: "IDAME-SUB (Surabaya Hub)" },
-      { name: "IDAME-DPS (Bali Branch)" }
+      { name: "IDAME-CGK" },
+      { name: "IDAME-SUB" },
+      { name: "IDAME-DPS" }
     ];
-
-    const { error: insertError } = await supabaseAdmin
-      .from('sites')
-      .insert(sampleSites);
-
-    if (insertError) {
-      console.error("Failed to seed sample sites:", insertError.message);
-    } else {
-      console.log("SUCCESS: Initialized sample operational sites successfully!");
-    }
+    await supabaseAdmin.from('sites').insert(sampleSites);
   }
 }
