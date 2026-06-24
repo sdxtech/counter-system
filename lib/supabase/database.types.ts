@@ -31,6 +31,7 @@ export type Database = {
           role?: AppRole;
           updated_at?: string;
         };
+        Relationships: [];
       };
       menu_items: {
         Row: {
@@ -66,6 +67,26 @@ export type Database = {
           updated_by?: string | null;
           updated_at?: string;
         };
+        Relationships: [
+          {
+            foreignKeyName: "menu_items_active_image_id_fkey";
+            columns: ["active_image_id"];
+            referencedRelation: "menu_images";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "menu_items_created_by_fkey";
+            columns: ["created_by"];
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "menu_items_updated_by_fkey";
+            columns: ["updated_by"];
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       menu_images: {
         Row: {
@@ -95,6 +116,20 @@ export type Database = {
           deleted_at?: string | null;
           expires_at?: string;
         };
+        Relationships: [
+          {
+            foreignKeyName: "menu_images_menu_item_id_fkey";
+            columns: ["menu_item_id"];
+            referencedRelation: "menu_items";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "menu_images_uploaded_by_fkey";
+            columns: ["uploaded_by"];
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       audit_logs: {
         Row: {
@@ -116,6 +151,14 @@ export type Database = {
           created_at?: string;
         };
         Update: never;
+        Relationships: [
+          {
+            foreignKeyName: "audit_logs_actor_id_fkey";
+            columns: ["actor_id"];
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
       };
     };
     Functions: {

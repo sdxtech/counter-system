@@ -19,7 +19,7 @@ export function StatusPill({ qty }: StatusPillProps) {
   }[status];
 
   return (
-    <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${className}`}>
+    <span className={`inline-flex rounded-full px-4 py-1.5 text-lg font-semibold ring-1 ${className}`}>
       {label}
     </span>
   );
