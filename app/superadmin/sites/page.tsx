@@ -1,5 +1,3 @@
-// app/superadmin/sites/page.tsx
-import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { requireUserRole } from "@/lib/auth/guards";
 import { getSitesAction } from "./actions";
@@ -17,13 +15,6 @@ export default async function SiteManagementPage() {
     <AppShell title="Site Management" eyebrow="Superadmin">
       <div className="max-w-7xl mx-auto space-y-6">
         
-        {/* Breadcrumb Back Navigation */}
-        <div>
-          <Link href="/superadmin" className="inline-flex items-center text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors">
-            &larr; Back to Authorization Control
-          </Link>
-        </div>
-
         {/* Action Top Bar Banner */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
           <div>

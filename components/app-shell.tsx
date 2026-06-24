@@ -12,6 +12,11 @@ type AppShellProps = {
 const navigationItems = [
   { href: "/staff", label: "Staff" },
   { href: "/superadmin", label: "Superadmin" },
+  { href: "/superadmin/users", label: "User Management" },
+  {
+    href: "/superadmin/sites",
+    label: "Site & Deployment Management",
+  },
   { href: "/preview", label: "Preview" },
 ];
 
