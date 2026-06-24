@@ -256,3 +256,81 @@ export async function takeMenuItemAction(menuItemId: string): Promise<TakeMenuRe
   revalidatePath("/staff");
   return { success: true, message: "Qty berhasil dikurangi." };
 }
+
+// Add this to the bottom of app/staff/actions.ts
+
+export type EditMenuState = {
+  status: "idle" | "success" | "error";
+  message: string;
+  submissionId: string;
+};
+
+export async function editMenuAction(
+  menuItemId: string,
+  formData: FormData
+): Promise<EditMenuState> {
+  try {
+    const supabase = await createClient();
+
+    const name = formData.get("name") as string;
+    const qty = parseInt(formData.get("qty") as string, 10);
+    const note = formData.get("description") as string;
+    const photoFile = formData.get("photo") as File | null;
+
+    if (!name || isNaN(qty)) {
+      return { status: "error", message: "Nama Menu dan Qty wajib diisi.", submissionId: String(Date.now()) };
+    }
+
+    let activeImageId: string | null = null;
+
+    // Check if a brand new image file was picked to overwrite the old one
+    if (photoFile && photoFile.size > 0 && photoFile.name !== "undefined") {
+      const fileExt = photoFile.name.split(".").pop();
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
+      const filePath = `menu-images/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("menus")
+        .upload(filePath, photoFile, { cacheControl: "3600", upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage.from("menus").getPublicUrl(filePath);
+
+      const { data: imageData, error: imageInsertError } = await supabase
+        .from("menu_images")
+        .insert({ public_url: publicUrl, storage_path: filePath } as any)
+        .select("id")
+        .single();
+
+      if (imageInsertError) throw imageInsertError;
+      activeImageId = imageData.id;
+    }
+
+    // Prepare the record patch updates
+    const updateData: Record<string, any> = {
+      name,
+      qty,
+      note,
+    };
+
+    if (activeImageId) {
+      updateData.active_image_id = activeImageId;
+    }
+
+    const { error: updateError } = await supabase
+      .from("menu_items")
+      .update(updateData as any)
+      .eq("id", menuItemId);
+
+    if (updateError) throw updateError;
+
+    return { status: "success", message: "Menu updated successfully!", submissionId: String(Date.now()) };
+  } catch (error: any) {
+    return {
+      status: "error",
+      message: error.message || "Gagal mengubah data menu.",
+      submissionId: String(Date.now()),
+    };
+  }
+}
