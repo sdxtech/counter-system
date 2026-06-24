@@ -2,8 +2,9 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { AppRole } from "@/lib/supabase/database.types";
 
-type ProfileRole = {
+type ProfileAccess = {
   role?: AppRole | null;
+  site_id?: string | null;
 };
 
 export async function requireUserRole(allowedRoles: AppRole[]) {
@@ -19,7 +20,7 @@ export async function requireUserRole(allowedRoles: AppRole[]) {
 
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
-    .select("role")
+    .select("role, site_id")
     .eq("id", user.id)
     .single();
 
@@ -27,12 +28,12 @@ export async function requireUserRole(allowedRoles: AppRole[]) {
     redirect("/login");
   }
 
-  const typedProfile = profile as ProfileRole;
+  const typedProfile = profile as ProfileAccess;
   const role = typedProfile.role;
 
   if (!role || !allowedRoles.includes(role)) {
     redirect(role === "staff" ? "/staff" : "/login");
   }
 
-  return { user, role };
+  return { user, role, siteId: typedProfile.site_id ?? null };
 }

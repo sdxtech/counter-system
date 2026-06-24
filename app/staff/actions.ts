@@ -50,7 +50,12 @@ export async function createMenuAction(
   _previousState: CreateMenuState,
   formData: FormData,
 ): Promise<CreateMenuState> {
-  const { user } = await requireUserRole(["staff", "superadmin"]);
+  const { user, siteId } = await requireUserRole(["staff", "superadmin"]);
+
+  if (!siteId) {
+    return errorState("Akun belum memiliki site. Hubungi superadmin.");
+  }
+
   const parsedMenu = menuSchema.safeParse({
     name: formData.get("name"),
     qty: formData.get("qty"),
@@ -83,6 +88,7 @@ export async function createMenuAction(
       name,
       note: description,
       qty,
+      site_id: siteId,
       created_by: user.id,
       updated_by: user.id,
     })
@@ -94,7 +100,7 @@ export async function createMenuAction(
   }
 
   const extension = getFileExtension(photo.type);
-  const storagePath = `${user.id}/${menuItem.id}/${crypto.randomUUID()}.${extension}`;
+  const storagePath = `${siteId}/${user.id}/${menuItem.id}/${crypto.randomUUID()}.${extension}`;
   const { error: uploadError } = await supabase.storage
     .from(MENU_IMAGE_BUCKET)
     .upload(storagePath, await photo.arrayBuffer(), {
@@ -149,7 +155,7 @@ export async function createMenuAction(
     action: "create_menu_item",
     entity_type: "menu_item",
     entity_id: menuItem.id,
-    metadata: { name, qty },
+    metadata: { name, qty, site_id: siteId },
   });
 
   revalidatePath("/staff");
@@ -162,11 +168,17 @@ export async function createMenuAction(
 }
 
 export async function resetMenusAction(): Promise<ResetMenusResult> {
-  const { user } = await requireUserRole(["staff", "superadmin"]);
+  const { user, siteId } = await requireUserRole(["staff", "superadmin"]);
+
+  if (!siteId) {
+    return { success: false, message: "Akun belum memiliki site. Hubungi superadmin." };
+  }
+
   const supabase = await createClient();
   const { data: menuItems, error: menuSelectError } = await supabase
     .from("menu_items")
-    .select("id");
+    .select("id")
+    .eq("site_id", siteId);
 
   if (menuSelectError) {
     return { success: false, message: menuSelectError.message };
@@ -206,7 +218,7 @@ export async function resetMenusAction(): Promise<ResetMenusResult> {
     actor_id: user.id,
     action: "reset_menu_items",
     entity_type: "menu_item",
-    metadata: { deleted_count: menuIds.length },
+    metadata: { deleted_count: menuIds.length, site_id: siteId },
   });
 
   revalidatePath("/staff");
