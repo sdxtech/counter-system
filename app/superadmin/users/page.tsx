@@ -1,5 +1,3 @@
-// app/superadmin/users/page.tsx
-import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { requireUserRole } from "@/lib/auth/guards";
 import { getUsersAction } from "./actions";
@@ -21,13 +19,6 @@ export default async function UserManagementPage() {
     <AppShell title="Account Management" eyebrow="Superadmin">
       <div className="max-w-7xl mx-auto space-y-6">
         
-        {/* Navigation Breadcrumb Link */}
-        <div>
-          <Link href="/superadmin" className="inline-flex items-center text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors">
-            &larr; Back to Authorization Control
-          </Link>
-        </div>
-
         {/* Dashboard Actions Top Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
           <div>
