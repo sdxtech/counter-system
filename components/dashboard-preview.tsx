@@ -25,7 +25,12 @@ const sampleMenuItems: MenuCardData[] = [
 
 export function DashboardPreview() {
   return (
-    <AppShell title="Dashboard Counter Menu" eyebrow="Preview" action={<Button>+ Add Menu</Button>}>
+    <AppShell
+      title="Dashboard Counter Menu"
+      eyebrow="Preview"
+      role="preview"
+      action={<Button>+ Add Menu</Button>}
+    >
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {sampleMenuItems.map((item) => (
