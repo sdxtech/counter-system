@@ -8,12 +8,15 @@ import { ResetMenusDialog } from "./reset-menus-dialog";
 
 export const dynamic = "force-dynamic";
 
-async function getMenuItems(): Promise<MenuCardData[]> {
+async function getMenuItems(siteId: string | null): Promise<MenuCardData[]> {
+  if (!siteId) return [];
+
   const supabase = await createClient();
   const { data: menuItems, error: menuError } = await supabase
     .from("menu_items")
     .select("id, name, note, qty, active_image_id")
     .eq("is_active", true)
+    .eq("site_id", siteId)
     .order("created_at", { ascending: false });
 
   if (menuError) {
@@ -51,8 +54,8 @@ async function getMenuItems(): Promise<MenuCardData[]> {
 }
 
 export default async function StaffPage() {
-  const { role } = await requireUserRole(["staff", "superadmin"]);
-  const menuItems = await getMenuItems();
+  const { role, siteId } = await requireUserRole(["staff", "superadmin"]);
+  const menuItems = await getMenuItems(siteId);
 
   return (
     <AppShell

@@ -11,11 +11,31 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      sites: {
+        Row: {
+          id: string;
+          name: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          name?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           id: string;
           full_name: string;
           role: AppRole;
+          site_id: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -23,15 +43,24 @@ export type Database = {
           id: string;
           full_name?: string;
           role?: AppRole;
+          site_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           full_name?: string;
           role?: AppRole;
+          site_id?: string | null;
           updated_at?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "profiles_site_id_fkey";
+            columns: ["site_id"];
+            referencedRelation: "sites";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       menu_items: {
         Row: {
@@ -39,6 +68,7 @@ export type Database = {
           name: string;
           note: string;
           qty: number;
+          site_id: string | null;
           is_active: boolean;
           active_image_id: string | null;
           created_by: string | null;
@@ -51,6 +81,7 @@ export type Database = {
           name: string;
           note?: string;
           qty?: number;
+          site_id: string;
           is_active?: boolean;
           active_image_id?: string | null;
           created_by?: string | null;
@@ -62,6 +93,7 @@ export type Database = {
           name?: string;
           note?: string;
           qty?: number;
+          site_id?: string;
           is_active?: boolean;
           active_image_id?: string | null;
           updated_by?: string | null;
@@ -78,6 +110,12 @@ export type Database = {
             foreignKeyName: "menu_items_created_by_fkey";
             columns: ["created_by"];
             referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "menu_items_site_id_fkey";
+            columns: ["site_id"];
+            referencedRelation: "sites";
             referencedColumns: ["id"];
           },
           {
