@@ -7,12 +7,12 @@ import { DeleteSiteForm } from "./delete-site-form";
 export const dynamic = "force-dynamic";
 
 export default async function SiteManagementPage() {
-  await requireUserRole(["superadmin"]);
+  const { role } = await requireUserRole(["superadmin"]);
   
   const sites = await getSitesAction();
 
   return (
-    <AppShell title="Site Management" eyebrow="Superadmin">
+    <AppShell title="Site Management" eyebrow="Superadmin" role={role}>
       <div className="max-w-7xl mx-auto space-y-6">
         
         {/* Action Top Bar Banner */}

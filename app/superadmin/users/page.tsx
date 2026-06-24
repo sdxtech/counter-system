@@ -9,14 +9,14 @@ import { SiteSelect } from "./site-select";
 export const dynamic = "force-dynamic";
 
 export default async function UserManagementPage() {
-  await requireUserRole(["superadmin"]);
+  const { role } = await requireUserRole(["superadmin"]);
   const [users, sites] = await Promise.all([
     getUsersAction(),
     getSitesAction(),
   ]);
 
   return (
-    <AppShell title="Account Management" eyebrow="Superadmin">
+    <AppShell title="Account Management" eyebrow="Superadmin" role={role}>
       <div className="max-w-7xl mx-auto space-y-6">
         
         {/* Dashboard Actions Top Bar */}
