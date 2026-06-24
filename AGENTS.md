@@ -7,3 +7,5 @@ This version has breaking changes — APIs, conventions, and file structure may 
 # GitHub workflow
 
 Pushing code to GitHub does not require the GitHub CLI (`gh`). For a standard push to an existing configured remote, use `git push`. Only require `gh` when the requested operation specifically needs GitHub features that plain Git cannot provide, such as creating or managing pull requests.
+
+Before making any change—including bug fixes, new features, refactors, documentation, configuration, or any other modification—create and switch to a new branch from an up-to-date `main` branch. Never make or commit changes directly on `main`.
