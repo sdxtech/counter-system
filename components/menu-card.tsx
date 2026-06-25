@@ -79,29 +79,29 @@ export function MenuCard({ item, canTake = false, onEdit, isKiosk = false, isMul
         </button>
       )}
 
-      {/* 1. Header Quantity Section */}
-      <div className={`flex items-center justify-between border-b border-slate-100 shrink-0 w-full ${
-        isMultiRow ? "pb-1" : "pb-2"
+      {/* ==================== REVISI 1 & 2: CENTERED HEADER (QTY & PILL) ==================== */}
+      {/* Diubah menjadi flex-col item-center agar angka besar & status badge berada tepat di tengah atas */}
+      <div className={`flex flex-col items-center justify-center border-b border-slate-100 shrink-0 w-full ${
+        isMultiRow ? "pb-1 gap-0.5" : "pb-2 gap-1"
       }`}>
+        {/* Status Badge (Available / Low stock) di Center Atas */}
         <span className={`font-bold border rounded-full tracking-wide bg-white uppercase whitespace-nowrap leading-none ${
-          isMultiRow ? "px-1.5 py-0.5 text-[8px] scale-90 origin-left" : "px-2 py-1 text-[10px]"
+          isMultiRow ? "px-1.5 py-0.5 text-[8px] scale-90" : "px-2 py-1 text-[10px]"
         }`}>
           <span className={pillStyles.split(" ").pop() + " " + pillStyles}>
             {pillLabel}
           </span>
         </span>
+        
+        {/* Angka Qty Saja, Diperbesar, dan Posisi di Tengah */}
         <p className={`font-black text-blue-950 leading-none ${
-          isMultiRow ? "text-xs pr-6" : "text-base pr-8"
+          isMultiRow ? "text-base mt-0.5" : "text-3xl mt-1"
         }`}>
-          Qty: {optimisticQty}
+          {optimisticQty}
         </p>
       </div>
 
-      {/* 2. DYNAMIC MEDIA IMAGE FRAME */}
-      {/* 
-        - Jika multi-row aktif, gambar mengecil aman (max-h-[75px]).
-        - Jika single row (card sedikit), gambar membesar dramatis (max-h-[160px]) agar jauh lebih visible.
-      */}
+      {/* 2. Media Image Frame */}
       <div className={`w-full flex items-center justify-center bg-slate-50 rounded-xl overflow-hidden border border-slate-100/60 flex-1 min-h-[40px] p-1 shrink-0 transition-all ${
         isMultiRow ? "max-h-[75px] my-0.5" : "max-h-[160px] my-2"
       }`}>
@@ -116,9 +116,9 @@ export function MenuCard({ item, canTake = false, onEdit, isKiosk = false, isMul
         )}
       </div>
 
-      {/* 3. DYNAMIC TEXT INFORMATION FIELD */}
-      {/* Ukuran font text otomatis membesar jika space layar sedang lega */}
-      <div className="w-full shrink-0 min-h-0 overflow-hidden my-0.5">
+      {/* ==================== REVISI 3: CENTERED TEXT FIELD ==================== */}
+      {/* Menambahkan text-center untuk Nama Menu dan Deskripsi di bawah foto */}
+      <div className="w-full shrink-0 min-h-0 overflow-hidden my-0.5 text-center">
         <h2 className={`font-bold text-slate-900 truncate leading-tight transition-all ${
           isMultiRow ? "text-[11px]" : "text-[14px]"
         }`}>
