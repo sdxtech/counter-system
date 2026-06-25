@@ -58,17 +58,19 @@ export function MenuCard({ item, canTake = false, onEdit, isKiosk = false, isMul
   const pillLabel = isEmpty ? "Out of Stock" : isLowStock ? "Low stock" : "Available";
 
   return (
-    <article className="relative flex flex-col h-full w-full min-h-0 text-left bg-white overflow-hidden justify-between">
+    <article className={`relative flex flex-col h-full w-full min-h-0 text-left bg-white overflow-hidden justify-between ${
+      isMultiRow ? "p-1.5 gap-0.5" : "p-3 gap-2"
+    }`}>
       
       {/* Edit trigger button */}
-      {onEdit && (
+      {onEdit && !isKiosk && (
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
             onEdit(item);
           }}
-          className="absolute z-20 flex items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-400 shadow-xs transition-all hover:bg-slate-50 hover:text-slate-700 active:scale-90 cursor-pointer top-0 right-0 h-5 w-5"
+          className="absolute z-20 flex items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-400 shadow-xs transition-all hover:bg-slate-50 hover:text-slate-700 active:scale-90 cursor-pointer top-0 right-0 h-6 w-6"
           aria-label="Edit menu item"
         >
           <svg viewBox="0 0 24 24" className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -78,47 +80,66 @@ export function MenuCard({ item, canTake = false, onEdit, isKiosk = false, isMul
       )}
 
       {/* 1. Header Quantity Section */}
-      <div className="flex items-center justify-between border-b border-slate-100 pb-1 shrink-0 w-full">
-        <span className="px-1.5 py-0.5 text-[8px] font-bold border rounded-full tracking-wide bg-white uppercase whitespace-nowrap leading-none">
+      <div className={`flex items-center justify-between border-b border-slate-100 shrink-0 w-full ${
+        isMultiRow ? "pb-1" : "pb-2"
+      }`}>
+        <span className={`font-bold border rounded-full tracking-wide bg-white uppercase whitespace-nowrap leading-none ${
+          isMultiRow ? "px-1.5 py-0.5 text-[8px] scale-90 origin-left" : "px-2 py-1 text-[10px]"
+        }`}>
           <span className={pillStyles.split(" ").pop() + " " + pillStyles}>
             {pillLabel}
           </span>
         </span>
-        <p className="font-black text-blue-950 text-xs leading-none pr-6">
+        <p className={`font-black text-blue-950 leading-none ${
+          isMultiRow ? "text-xs pr-6" : "text-base pr-8"
+        }`}>
           Qty: {optimisticQty}
         </p>
       </div>
 
-      {/* 2. Proportional Image Frame Box */}
-      <div className={`w-full flex items-center justify-center bg-slate-50 rounded-xl overflow-hidden border border-slate-100/60 flex-1 min-h-[36px] max-h-[64px] my-1 p-0.5 shrink-0`}>
+      {/* 2. DYNAMIC MEDIA IMAGE FRAME */}
+      {/* 
+        - Jika multi-row aktif, gambar mengecil aman (max-h-[75px]).
+        - Jika single row (card sedikit), gambar membesar dramatis (max-h-[160px]) agar jauh lebih visible.
+      */}
+      <div className={`w-full flex items-center justify-center bg-slate-50 rounded-xl overflow-hidden border border-slate-100/60 flex-1 min-h-[40px] p-1 shrink-0 transition-all ${
+        isMultiRow ? "max-h-[75px] my-0.5" : "max-h-[160px] my-2"
+      }`}>
         {item.imageUrl ? (
           <img src={item.imageUrl} alt={item.name} className="h-full w-full object-contain" />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-slate-100 text-[8px] font-semibold text-slate-400">
+          <div className={`flex h-full w-full items-center justify-center bg-slate-100 font-semibold text-slate-400 ${
+            isMultiRow ? "text-[8px]" : "text-[11px]"
+          }`}>
             No Photo
           </div>
         )}
       </div>
 
-      {/* 3. Text Information Field */}
+      {/* 3. DYNAMIC TEXT INFORMATION FIELD */}
+      {/* Ukuran font text otomatis membesar jika space layar sedang lega */}
       <div className="w-full shrink-0 min-h-0 overflow-hidden my-0.5">
-        <h2 className="text-[11px] font-bold text-slate-900 truncate leading-tight">
+        <h2 className={`font-bold text-slate-900 truncate leading-tight transition-all ${
+          isMultiRow ? "text-[11px]" : "text-[14px]"
+        }`}>
           {item.name}
         </h2>
-        <p className="text-[9px] text-slate-400 truncate leading-none mt-0.5">
+        <p className={`text-slate-400 truncate leading-none mt-0.5 transition-all ${
+          isMultiRow ? "text-[9px]" : "text-[11px] mt-1"
+        }`}>
           {item.note || "No description"}
         </p>
       </div>
 
-      {/* 4. Corrected Action Button (Standardized to Tailwind h-7 / h-8 specs) */}
+      {/* 4. Action Button Row */}
       <div className="w-full shrink-0 pt-0.5">
         <Button
           type="button"
           variant={isEmpty || !canTake ? "ghost" : "secondary"}
           disabled={isEmpty || !canTake || isPending}
           onClick={handleTake}
-          className={`w-full font-bold transition-all tracking-wider uppercase bg-slate-800 text-white hover:bg-slate-950 rounded-xl shadow-xs flex items-center justify-center text-[10px] ${
-            isMultiRow ? "h-7" : "h-8"
+          className={`w-full font-bold transition-all tracking-wider uppercase bg-slate-800 text-white hover:bg-slate-950 rounded-xl shadow-xs flex items-center justify-center ${
+            isMultiRow ? "h-7 text-[10px]" : "h-9 text-[12px]"
           }`}
         >
           TAKE
