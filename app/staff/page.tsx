@@ -1,4 +1,5 @@
 import { AppShell } from "@/components/app-shell";
+import { cleanupExpiredMenus } from "@/lib/menu-cleanup";
 import type { MenuCardData } from "@/components/menu-card";
 import { requireUserRole } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
@@ -105,6 +106,13 @@ async function getMenuItems(siteId: string | null): Promise<MenuCardData[]> {
 
 export default async function StaffPage() {
   const { role, siteId } = await requireUserRole(["staff", "superadmin"]);
+
+  try {
+    await cleanupExpiredMenus();
+  } catch (error) {
+    console.error("Failed to cleanup expired menus", error);
+  }
+
   const menuItems = await getMenuItems(siteId);
 
   return (
