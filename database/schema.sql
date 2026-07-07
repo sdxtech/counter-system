@@ -63,6 +63,7 @@ create table if not exists public.menu_items (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   note text not null default '',
+  nutrition_fact text not null default '',
   qty integer not null default 0 check (qty >= 0),
   site_id text references public.sites(id) on delete cascade,
   is_active boolean not null default true,
@@ -75,6 +76,9 @@ create table if not exists public.menu_items (
 
 alter table public.menu_items
   add column if not exists site_id text;
+
+alter table public.menu_items
+  add column if not exists nutrition_fact text not null default '';
 
 alter table public.menu_items
   drop constraint if exists menu_items_site_id_fkey;
@@ -105,7 +109,7 @@ create table if not exists public.menu_images (
   storage_path text not null unique,
   public_url text,
   uploaded_by uuid references public.profiles(id),
-  expires_at timestamptz not null default (now() + interval '10 hours'),
+  expires_at timestamptz not null default (now() + interval '12 hours'),
   deleted_at timestamptz,
   created_at timestamptz not null default now()
 );

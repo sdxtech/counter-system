@@ -67,6 +67,7 @@ export type Database = {
           id: string;
           name: string;
           note: string;
+          nutrition_fact: string;
           qty: number;
           site_id: string | null;
           is_active: boolean;
@@ -80,6 +81,7 @@ export type Database = {
           id?: string;
           name: string;
           note?: string;
+          nutrition_fact?: string;
           qty?: number;
           site_id: string;
           is_active?: boolean;
@@ -92,6 +94,7 @@ export type Database = {
         Update: {
           name?: string;
           note?: string;
+          nutrition_fact?: string;
           qty?: number;
           site_id?: string;
           is_active?: boolean;

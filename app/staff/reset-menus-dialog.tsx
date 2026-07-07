@@ -7,9 +7,15 @@ import { resetMenusAction } from "./actions";
 
 type ResetMenusDialogProps = {
   disabled?: boolean;
+  triggerLabel?: string;
+  triggerClassName?: string;
 };
 
-export function ResetMenusDialog({ disabled = false }: ResetMenusDialogProps) {
+export function ResetMenusDialog({
+  disabled = false,
+  triggerLabel = "Reset",
+  triggerClassName = "",
+}: ResetMenusDialogProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -42,12 +48,13 @@ export function ResetMenusDialog({ disabled = false }: ResetMenusDialogProps) {
       <Button
         variant="danger"
         disabled={disabled}
+        className={triggerClassName}
         onClick={() => {
           setErrorMessage("");
           setIsOpen(true);
         }}
       >
-        Reset
+        {triggerLabel}
       </Button>
 
       {isOpen ? (

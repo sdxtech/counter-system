@@ -1,74 +1,96 @@
 "use client";
 
-import { useRef } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { MenuCard, type MenuCardData } from "@/components/menu-card";
+import { deleteMenuItemAction } from "./actions";
+import { EditMenuDialog } from "./edit-menu-dialog";
 
 type MenuCarouselProps = {
   items: MenuCardData[];
+  isFullMode?: boolean;
 };
 
-export function MenuCarousel({ items }: MenuCarouselProps) {
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const isCompact = items.length > 2;
+export function MenuCarousel({ items, isFullMode = false }: MenuCarouselProps) {
+  const router = useRouter();
+  const [activeEditItem, setActiveEditItem] = useState<MenuCardData | null>(null);
+  const [deleteError, setDeleteError] = useState("");
+  const [isDeletePending, startDeleteTransition] = useTransition();
+  const isCompactGrid = items.length > 3;
+  const gridClassName =
+    items.length <= 1
+      ? "grid-cols-1"
+      : items.length === 2
+        ? "grid-cols-1 lg:grid-cols-2"
+        : items.length === 3
+          ? "grid-cols-1 lg:grid-cols-3"
+          : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
 
-  function scrollCarousel(direction: -1 | 1) {
-    const carousel = carouselRef.current;
-    if (!carousel) return;
+  function handleDelete(item: MenuCardData) {
+    const confirmed = window.confirm(`Hapus menu "${item.name}"?`);
+    if (!confirmed || isDeletePending) return;
 
-    carousel.scrollBy({
-      left: direction * Math.max(280, carousel.clientWidth * 0.75),
-      behavior: "smooth",
+    setDeleteError("");
+    startDeleteTransition(async () => {
+      const result = await deleteMenuItemAction(item.id);
+
+      if (!result.success) {
+        setDeleteError(result.message);
+        return;
+      }
+
+      router.refresh();
     });
   }
 
-  if (items.length === 0) return null;
+  const displayItems =
+    items.length > 0
+      ? items
+      : [
+          {
+            id: "empty-preview",
+            name: "Nama menu akan ditampilkan di sini",
+            note: "",
+            nutritionFact: "",
+            qty: 0,
+            imageUrl: null,
+          },
+        ];
 
   return (
-    <section aria-label="Menu carousel" className="relative">
-      {isCompact ? (
-        <>
-          <button
-            type="button"
-            onClick={() => scrollCarousel(-1)}
-            aria-label="Previous menus"
-            className="absolute left-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-slate-300 bg-white text-xl font-bold text-slate-700 shadow-md transition hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] sm:left-3"
-          >
-            &larr;
-          </button>
-          <button
-            type="button"
-            onClick={() => scrollCarousel(1)}
-            aria-label="Next menus"
-            className="absolute right-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-slate-300 bg-white text-xl font-bold text-slate-700 shadow-md transition hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] sm:right-3"
-          >
-            &rarr;
-          </button>
-        </>
+    <section
+      aria-label="Menu grid"
+      className={`relative z-10 ${isCompactGrid || isFullMode ? "h-screen overflow-y-auto overflow-x-hidden" : "min-h-screen overflow-visible"}`}
+    >
+      {deleteError ? (
+        <p role="alert" className="absolute left-4 right-4 top-12 z-30 rounded-md bg-red-50 px-4 py-3 text-center text-sm font-semibold text-red-700">
+          {deleteError}
+        </p>
       ) : null}
 
       <div
-        ref={carouselRef}
-        className={`snap-x snap-mandatory overflow-x-auto scroll-smooth pb-4 ${
-          isCompact ? "px-14 sm:px-16" : ""
-        }`}
+        className={`grid w-full ${isCompactGrid ? "min-h-screen auto-rows-min gap-px overflow-visible px-4 pb-6 pt-16" : "min-h-screen"} ${gridClassName}`}
       >
-        <div className="flex w-max min-w-full justify-center gap-5">
-          {items.map((item) => (
-            <div
-              key={item.id}
-              className={`shrink-0 snap-start ${
-                isCompact
-                  ? "w-[min(82vw,19rem)]"
-                  : items.length === 1
-                    ? "w-full max-w-lg"
-                    : "w-[calc(50%-0.625rem)] min-w-80"
-              }`}
-            >
-              <MenuCard item={item} canTake />
-            </div>
-          ))}
-        </div>
+        {displayItems.map((item) => (
+          <MenuCard
+            key={item.id}
+            item={item}
+            canTake={items.length > 0}
+            onEdit={isFullMode ? undefined : setActiveEditItem}
+            onDelete={isFullMode ? undefined : handleDelete}
+            controlsDisabled={isDeletePending}
+            compact={isCompactGrid}
+            isFullMode={isFullMode}
+            itemCount={items.length}
+          />
+        ))}
       </div>
+
+      <EditMenuDialog
+        key={activeEditItem?.id ?? "no-active-menu"}
+        item={activeEditItem}
+        onClose={() => setActiveEditItem(null)}
+      />
     </section>
   );
 }

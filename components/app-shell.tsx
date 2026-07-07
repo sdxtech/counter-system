@@ -93,7 +93,7 @@ export function AppShell({
           </div>
         ) : null}
 
-        <div className="px-6 py-6">{children}</div>
+        <div className={showHeader ? "px-6 py-6" : "p-0"}>{children}</div>
       </section>
     </main>
   );
