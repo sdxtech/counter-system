@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { LoginForm } from "@/components/login-form";
 
 export default function LoginPage() {
@@ -15,12 +14,6 @@ export default function LoginPage() {
           </p>
         </div>
         <LoginForm />
-        <Link
-          href="/preview"
-          className="mt-5 block text-center text-sm font-semibold text-[var(--color-primary)]"
-        >
-          Back to dashboard preview
-        </Link>
       </section>
     </main>
   );
