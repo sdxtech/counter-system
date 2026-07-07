@@ -11,11 +11,25 @@ const initialCreateMenuState: CreateMenuState = {
   submissionId: "",
 };
 
-export function AddMenuDialog() {
+type AddMenuDialogProps = {
+  disabled?: boolean;
+  triggerLabel?: string;
+  triggerClassName?: string;
+  showTriggerIcon?: boolean;
+};
+
+export function AddMenuDialog({
+  disabled = false,
+  triggerLabel = "Add Menu",
+  triggerClassName = "",
+  showTriggerIcon = true,
+}: AddMenuDialogProps) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [descriptionValue, setDescriptionValue] = useState("");
+  const [nutritionValue, setNutritionValue] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isPending, startTransition] = useTransition();
 
@@ -39,6 +53,8 @@ export function AddMenuDialog() {
 
     formRef.current?.reset();
     setPreviewUrl(null);
+    setDescriptionValue("");
+    setNutritionValue("");
     setErrorMessage("");
     setIsOpen(false);
   }
@@ -58,6 +74,8 @@ export function AddMenuDialog() {
 
       formRef.current?.reset();
       setPreviewUrl(null);
+      setDescriptionValue("");
+      setNutritionValue("");
       setIsOpen(false);
       router.refresh();
     });
@@ -66,16 +84,19 @@ export function AddMenuDialog() {
   return (
     <>
       <Button
+        disabled={disabled}
         onClick={() => {
           setErrorMessage("");
           setIsOpen(true);
         }}
-        className="gap-2"
+        className={`gap-2 ${triggerClassName}`}
       >
-        <span className="text-xl leading-none" aria-hidden="true">
-          +
-        </span>
-        Add Menu
+        {showTriggerIcon ? (
+          <span className="text-xl leading-none" aria-hidden="true">
+            +
+          </span>
+        ) : null}
+        {triggerLabel}
       </Button>
 
       {isOpen ? (
@@ -126,7 +147,7 @@ export function AddMenuDialog() {
                       name="name"
                       type="text"
                       required
-                      maxLength={100}
+                      maxLength={25}
                       disabled={isPending}
                       placeholder="Contoh: Nasi Goreng"
                       className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 text-sm text-slate-950 outline-none transition focus:border-[var(--color-primary)] focus:ring-2 focus:ring-blue-100 disabled:bg-slate-100"
@@ -188,16 +209,48 @@ export function AddMenuDialog() {
               </div>
 
               <div>
-                <label htmlFor="menu-description" className="block text-sm font-bold text-slate-700">
-                  Description
-                </label>
+                <div className="flex items-center justify-between gap-3">
+                  <label htmlFor="menu-description" className="block text-sm font-bold text-slate-700">
+                    Description
+                  </label>
+                  <span className="text-xs font-semibold text-slate-500">
+                    {descriptionValue.length}/100
+                  </span>
+                </div>
                 <textarea
                   id="menu-description"
                   name="description"
                   rows={4}
-                  maxLength={500}
+                  maxLength={100}
                   disabled={isPending}
+                  value={descriptionValue}
+                  onChange={(event) => setDescriptionValue(event.target.value)}
                   placeholder="Tambahkan deskripsi menu"
+                  className="mt-2 w-full resize-none rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-[var(--color-primary)] focus:ring-2 focus:ring-blue-100 disabled:bg-slate-100"
+                />
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between gap-3">
+                  <label htmlFor="menu-nutrition" className="block text-sm font-bold text-slate-700">
+                    Nutrition Fact
+                  </label>
+                  <span className="text-xs font-semibold text-slate-500">
+                    {nutritionValue.length}/100
+                  </span>
+                </div>
+                <textarea
+                  id="menu-nutrition"
+                  name="nutritionFact"
+                  rows={4}
+                  maxLength={100}
+                  disabled={isPending}
+                  value={nutritionValue}
+                  onChange={(event) => setNutritionValue(event.target.value)}
+                  placeholder={`Energy : 308.1 kcal
+Protein : 10 gr
+Fat : 18.7 gr
+Carbo : 26.1 gr`}
                   className="mt-2 w-full resize-none rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-950 outline-none transition focus:border-[var(--color-primary)] focus:ring-2 focus:ring-blue-100 disabled:bg-slate-100"
                 />
               </div>

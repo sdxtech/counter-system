@@ -7,18 +7,21 @@ const sampleMenuItems: MenuCardData[] = [
     id: "sample-1",
     name: "Meal A Western",
     note: "Chicken, potato, mushroom sauce",
+    nutritionFact: "Energy : 308.1 kcal\nProtein : 10 gr",
     qty: 62,
   },
   {
     id: "sample-2",
     name: "Meal B Indonesian",
     note: "Rendang, rice, sambal",
+    nutritionFact: "Energy : 420 kcal\nProtein : 18 gr",
     qty: 18,
   },
   {
     id: "sample-3",
     name: "Meal C Vegetarian",
     note: "Contains peanuts",
+    nutritionFact: "Energy : 250 kcal\nProtein : 7 gr",
     qty: 0,
   },
 ];

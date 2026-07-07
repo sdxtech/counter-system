@@ -6,7 +6,7 @@ export function getMenuStatus(qty: number): MenuStatus {
   return "available";
 }
 
-export function getPhotoExpiryDate(hours = 10) {
+export function getPhotoExpiryDate(hours = 12) {
   const expiresAt = new Date();
   expiresAt.setHours(expiresAt.getHours() + hours);
   return expiresAt;
