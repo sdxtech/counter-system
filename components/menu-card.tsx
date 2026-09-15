@@ -65,6 +65,7 @@ export function MenuCard({
   const takeButton = (
     <button
       type="button"
+      aria-label={`Ambil ${item.name}`}
       disabled={isEmpty || !canTake || isPending}
       onClick={handleTake}
       className={
@@ -78,9 +79,7 @@ export function MenuCard({
                   : ""
               }`
       }
-    >
-      TAKE
-    </button>
+    />
   );
 
   const imageFrame = (
