@@ -1,13 +1,8 @@
 // app/superadmin/users/actions.ts
 'use server'
 
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
-
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
 
 export async function createUserAction(formData: FormData) {
   const email = formData.get('email') as string
@@ -17,6 +12,7 @@ export async function createUserAction(formData: FormData) {
 
   if (!email || !password) return
 
+  const supabaseAdmin = createAdminClient()
   const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
     email: email,
     password: password,
@@ -35,6 +31,7 @@ export async function createUserAction(formData: FormData) {
 }
 
 export async function getUsersAction() {
+  const supabaseAdmin = createAdminClient()
   const { data, error } = await supabaseAdmin.auth.admin.listUsers()
   return error ? [] : data.users
 }
@@ -42,6 +39,7 @@ export async function getUsersAction() {
 export async function deleteUserAction(formData: FormData) {
   const userId = formData.get('userId') as string
   if (!userId) return
+  const supabaseAdmin = createAdminClient()
   await supabaseAdmin.auth.admin.deleteUser(userId)
   revalidatePath('/superadmin/users')
 }
@@ -50,6 +48,7 @@ export async function deleteUserAction(formData: FormData) {
 export async function updateUserFieldsAction(userId: string, targetRole: string, targetSiteId: string) {
   if (!userId) return
 
+  const supabaseAdmin = createAdminClient()
   // 1. Update Auth system metadata snapshots
   await supabaseAdmin.auth.admin.updateUserById(userId, {
     user_metadata: { role: targetRole, siteId: targetSiteId }
@@ -66,6 +65,7 @@ export async function updateUserFieldsAction(userId: string, targetRole: string,
 
 // Backwards compatibility wrapper for old role dropdown triggers
 export async function updateUserRoleAction(userId: string, newRole: string) {
+  const supabaseAdmin = createAdminClient()
   const { data } = await supabaseAdmin.auth.admin.getUserById(userId)
   const currentSiteId = data?.user?.user_metadata?.siteId || ''
   await updateUserFieldsAction(userId, newRole, currentSiteId)
