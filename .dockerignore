@@ -4,7 +4,6 @@ node_modules
 npm-debug.log*
 .env
 .env.*
-!.env.docker.example
 *.pem
 coverage
 docs

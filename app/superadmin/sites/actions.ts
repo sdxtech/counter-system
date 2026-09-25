@@ -1,16 +1,12 @@
 // app/superadmin/sites/actions.ts
 'use server'
 
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
-
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
 
 // 1. READ: Fetch all available sites
 export async function getSitesAction() {
+  const supabaseAdmin = createAdminClient()
   const { data, error } = await supabaseAdmin
     .from('sites')
     .select('*')
@@ -28,6 +24,7 @@ export async function createSiteAction(formData: FormData) {
   const name = formData.get('siteName') as string
   if (!name) return
 
+  const supabaseAdmin = createAdminClient()
   const { error } = await supabaseAdmin
     .from('sites')
     .insert([{ name }])
@@ -46,6 +43,7 @@ export async function deleteSiteAction(formData: FormData) {
   const siteId = formData.get('siteId') as string
   if (!siteId) return
 
+  const supabaseAdmin = createAdminClient()
   const { error } = await supabaseAdmin
     .from('sites')
     .delete()
