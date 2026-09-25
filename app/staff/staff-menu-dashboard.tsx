@@ -7,13 +7,25 @@ import { AddMenuDialog } from "./add-menu-dialog";
 import { MenuCarousel } from "./menu-carousel";
 import { ResetMenusDialog } from "./reset-menus-dialog";
 import { LogoutDialog } from "./logout-dialog";
+import { TakeMenuProvider, useTakeMenuQueue } from "@/components/take-menu-provider";
 
 type StaffMenuDashboardProps = {
   items: MenuCardData[];
 };
 
 export function StaffMenuDashboard({ items }: StaffMenuDashboardProps) {
+  return (
+    <TakeMenuProvider items={items}>
+      <StaffMenuDashboardContent items={items} />
+    </TakeMenuProvider>
+  );
+}
+
+function StaffMenuDashboardContent({ items }: StaffMenuDashboardProps) {
   const [isFullMode, setIsFullMode] = useState(false);
+  const takeQueue = useTakeMenuQueue();
+  const hasPendingTakes = Boolean(takeQueue?.snapshot.pending);
+  const needsStockRefresh = Object.values(takeQueue?.snapshot.items ?? {}).some((item) => item.needsRefresh);
   const hasReachedMenuLimit = items.length >= 6;
   const controlClassName =
     "inline-flex h-auto items-center justify-center rounded-[12px] border border-transparent !bg-white/10 px-2 py-1 text-xs font-semibold uppercase !text-white/80 !shadow-none !ring-0 backdrop-blur-md transition hover:-translate-y-0.5 hover:!bg-[#ff9500]/20 hover:!text-white focus-visible:border-transparent focus-visible:outline-none focus-visible:!ring-0 disabled:!bg-white/5 disabled:!text-white/35";
@@ -33,17 +45,17 @@ export function StaffMenuDashboard({ items }: StaffMenuDashboardProps) {
             Full Mode
           </Button>
           <AddMenuDialog
-            disabled={hasReachedMenuLimit}
+            disabled={hasReachedMenuLimit || hasPendingTakes}
             triggerLabel="Add Menu"
             triggerClassName={controlClassName}
             showTriggerIcon={false}
           />
           <ResetMenusDialog
-            disabled={items.length === 0}
+            disabled={items.length === 0 || hasPendingTakes || needsStockRefresh}
             triggerLabel="Reset"
             triggerClassName={controlClassName}
           />
-          <LogoutDialog triggerClassName={controlClassName} />
+          <LogoutDialog triggerClassName={controlClassName} disabled={hasPendingTakes} />
         </div>
 
         {hasReachedMenuLimit ? (

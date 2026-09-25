@@ -6,9 +6,10 @@ import { logoutAction } from "./actions";
 
 type LogoutDialogProps = {
   triggerClassName?: string;
+  disabled?: boolean;
 };
 
-export function LogoutDialog({ triggerClassName = "" }: LogoutDialogProps) {
+export function LogoutDialog({ triggerClassName = "", disabled = false }: LogoutDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   function closeDialog() {
@@ -17,7 +18,7 @@ export function LogoutDialog({ triggerClassName = "" }: LogoutDialogProps) {
 
   return (
     <>
-      <Button type="button" variant="ghost" className={triggerClassName} onClick={() => setIsOpen(true)}>
+      <Button type="button" variant="ghost" className={triggerClassName} disabled={disabled} onClick={() => setIsOpen(true)}>
         Logout
       </Button>
 
@@ -56,7 +57,7 @@ export function LogoutDialog({ triggerClassName = "" }: LogoutDialogProps) {
                 Cancel
               </Button>
               <form action={logoutAction}>
-                <Button type="submit" variant="danger">
+                <Button type="submit" variant="danger" disabled={disabled}>
                   Yes, Logout
                 </Button>
               </form>

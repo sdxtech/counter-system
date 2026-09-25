@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { MenuCard, type MenuCardData } from "@/components/menu-card";
 import { deleteMenuItemAction } from "./actions";
 import { EditMenuDialog } from "./edit-menu-dialog";
+import { useTakeMenuQueue } from "@/components/take-menu-provider";
 
 type MenuCarouselProps = {
   items: MenuCardData[];
@@ -13,6 +14,8 @@ type MenuCarouselProps = {
 
 export function MenuCarousel({ items, isFullMode = false }: MenuCarouselProps) {
   const router = useRouter();
+  const takeQueue = useTakeMenuQueue();
+  const hasPendingTakes = Boolean(takeQueue?.snapshot.pending);
   const [activeEditItem, setActiveEditItem] = useState<MenuCardData | null>(null);
   const [deleteError, setDeleteError] = useState("");
   const [isDeletePending, startDeleteTransition] = useTransition();
@@ -28,7 +31,7 @@ export function MenuCarousel({ items, isFullMode = false }: MenuCarouselProps) {
 
   function handleDelete(item: MenuCardData) {
     const confirmed = window.confirm(`Hapus menu "${item.name}"?`);
-    if (!confirmed || isDeletePending) return;
+    if (!confirmed || isDeletePending || hasPendingTakes) return;
 
     setDeleteError("");
     startDeleteTransition(async () => {
@@ -78,7 +81,7 @@ export function MenuCarousel({ items, isFullMode = false }: MenuCarouselProps) {
             canTake={items.length > 0}
             onEdit={isFullMode ? undefined : setActiveEditItem}
             onDelete={isFullMode ? undefined : handleDelete}
-            controlsDisabled={isDeletePending}
+            controlsDisabled={isDeletePending || hasPendingTakes || Boolean(takeQueue?.snapshot.items[item.id]?.needsRefresh)}
             compact={isCompactGrid}
             isFullMode={isFullMode}
             itemCount={items.length}

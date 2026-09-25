@@ -28,6 +28,7 @@ export function ResetMenusDialog({
   }
 
   function handleReset() {
+    if (disabled || isPending) return;
     setErrorMessage("");
 
     startTransition(async () => {
@@ -95,7 +96,7 @@ export function ResetMenusDialog({
               <Button type="button" variant="ghost" onClick={closeDialog} disabled={isPending}>
                 Cancel
               </Button>
-              <Button type="button" variant="danger" onClick={handleReset} disabled={isPending}>
+              <Button type="button" variant="danger" onClick={handleReset} disabled={disabled || isPending}>
                 {isPending ? "Resetting..." : "Yes, Reset All"}
               </Button>
             </div>

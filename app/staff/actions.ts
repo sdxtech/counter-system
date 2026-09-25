@@ -6,6 +6,8 @@ import { z } from "zod";
 import { requireUserRole } from "@/lib/auth/guards";
 import { getPhotoExpiryDate } from "@/lib/counter";
 import { createClient } from "@/lib/supabase/server";
+import type { TakeMenuResult } from "@/lib/take-queue";
+import { takeMenuStock } from "@/lib/take-menu-stock";
 
 const MENU_IMAGE_BUCKET = "menu-images";
 const MAX_ACTIVE_MENU_ITEMS = 6;
@@ -39,11 +41,6 @@ export type CreateMenuState = {
 };
 
 export type ResetMenusResult = {
-  success: boolean;
-  message: string;
-};
-
-export type TakeMenuResult = {
   success: boolean;
   message: string;
 };
@@ -308,7 +305,12 @@ export async function resetMenusAction(): Promise<ResetMenusResult> {
 }
 
 export async function takeMenuItemAction(menuItemId: string): Promise<TakeMenuResult> {
-  await requireUserRole(["staff", "superadmin"]);
+  try {
+    await requireUserRole(["staff", "superadmin"]);
+  } catch {
+    // Return a queue error instead of navigating away with unsaved clicks.
+    return { success: false, message: "Sesi atau akses tidak dapat diverifikasi." };
+  }
   const parsedMenuItemId = z.string().uuid().safeParse(menuItemId);
 
   if (!parsedMenuItemId.success) {
@@ -316,21 +318,8 @@ export async function takeMenuItemAction(menuItemId: string): Promise<TakeMenuRe
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.rpc("take_menu_item", {
-    p_menu_item_id: parsedMenuItemId.data,
-  });
-
-  if (error) {
-    return {
-      success: false,
-      message: error.message.includes("qty cannot go below zero")
-        ? "Qty menu sudah habis."
-        : error.message,
-    };
-  }
-
-  revalidatePath("/staff");
-  return { success: true, message: "Qty berhasil dikurangi." };
+  // Avoid refreshing /staff for every click (auth, menu queries and cleanup).
+  return takeMenuStock(supabase, parsedMenuItemId.data);
 }
 
 export async function editMenuAction(menuItemId: string, formData: FormData): Promise<MenuMutationResult> {

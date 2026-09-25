@@ -205,7 +205,7 @@ export type Database = {
     Functions: {
       take_menu_item: {
         Args: { p_menu_item_id: string };
-        Returns: Database["public"]["Tables"]["menu_items"]["Row"];
+        Returns: Database["public"]["Tables"]["menu_items"]["Row"][];
       };
     };
     Views: Record<string, never>;

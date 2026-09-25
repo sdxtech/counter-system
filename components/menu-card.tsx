@@ -1,8 +1,6 @@
 "use client";
 
-import { useOptimistic, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { takeMenuItemAction } from "@/app/staff/actions";
+import { useTakeMenuQueue } from "@/components/take-menu-provider";
 
 export type MenuCardData = {
   id: string;
@@ -33,13 +31,10 @@ export function MenuCard({
   compact = false,
   itemCount = 1,
 }: MenuCardProps) {
-  const router = useRouter();
-  const [optimisticQty, decreaseOptimisticQty] = useOptimistic(
-    item.qty,
-    (currentQty) => Math.max(0, currentQty - 1),
-  );
-  const [errorMessage, setErrorMessage] = useState("");
-  const [isPending, startTransition] = useTransition();
+  const takeQueue = useTakeMenuQueue();
+  const takeState = takeQueue?.snapshot.items[item.id];
+  const optimisticQty = takeState?.qty ?? item.qty;
+  const errorMessage = takeState?.error ?? "";
   const isEmpty = optimisticQty <= 0;
   const statusLabel = isEmpty ? "Empty" : optimisticQty <= 5 ? "Low Stock" : "Available";
   const isSingleCard = itemCount <= 1;
@@ -47,28 +42,17 @@ export function MenuCard({
   const hasFoodDetails = Boolean(item.note || item.nutritionFact);
 
   function handleTake() {
-    if (isEmpty || !canTake || isPending) return;
-
-    setErrorMessage("");
-    startTransition(async () => {
-      decreaseOptimisticQty(undefined);
-      const result = await takeMenuItemAction(item.id);
-
-      if (!result.success) {
-        setErrorMessage(result.message);
-      }
-
-      router.refresh();
-    });
+    if (isEmpty || !canTake) return;
+    takeQueue?.take(item.id);
   }
 
   const takeButton = (
     <button
       type="button"
       aria-label={`Ambil ${item.name}`}
-      disabled={isEmpty || !canTake || isPending}
+      disabled={isEmpty || !canTake || !takeState || takeState.needsRefresh}
       onClick={handleTake}
-      className={
+      className={`touch-manipulation select-none ${
         compact
           ? "mt-2 h-8 w-[110px] rounded-[20px] border-0 bg-[linear-gradient(135deg,#ff9500,#ff6b35)] text-[0.85rem] font-bold uppercase text-white shadow-[0_6px_16px_rgba(255,149,0,0.35)] transition hover:-translate-y-0.5 disabled:bg-white/10 disabled:from-white/10 disabled:to-white/10 disabled:text-white/35 disabled:shadow-none [@media_(hover:hover)_and_(pointer:fine)_and_(min-width:1024px)]:mt-1 [@media_(hover:hover)_and_(pointer:fine)_and_(min-width:1024px)]:h-6 [@media_(hover:hover)_and_(pointer:fine)_and_(min-width:1024px)]:w-[84px] [@media_(hover:hover)_and_(pointer:fine)_and_(min-width:1024px)]:text-[11px]"
           : isSingleCard
@@ -78,9 +62,32 @@ export function MenuCard({
                   ? "[@media_(hover:hover)_and_(pointer:fine)_and_(min-width:1024px)]:mt-1 [@media_(hover:hover)_and_(pointer:fine)_and_(min-width:1024px)]:h-8 [@media_(hover:hover)_and_(pointer:fine)_and_(min-width:1024px)]:w-[110px] [@media_(hover:hover)_and_(pointer:fine)_and_(min-width:1024px)]:text-sm"
                   : ""
               }`
-      }
+      }`}
     />
   );
+
+  const takeFeedback = canTake ? (
+    <>
+      <p role="status" className="mt-2 min-h-4 text-xs text-white/70">
+        {takeState?.pending ? `Menyimpan ${takeState.pending} pengambilan…` : "\u00a0"}
+      </p>
+      {errorMessage && (
+        <div className="mt-3 max-w-64 rounded-lg bg-red-500/15 px-3 py-2 text-center text-xs text-red-100">
+          <p role="alert">{errorMessage}</p>
+          {takeState?.needsRefresh && (
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              disabled={Boolean(takeQueue?.snapshot.pending)}
+              className="mt-2 font-semibold underline disabled:opacity-50"
+            >
+              Muat ulang stok
+            </button>
+          )}
+        </div>
+      )}
+    </>
+  ) : null;
 
   const imageFrame = (
     <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-[inherit] bg-white/10">
@@ -103,7 +110,7 @@ export function MenuCard({
   const editButton = onEdit ? (
     <button
       type="button"
-      onClick={() => onEdit(item)}
+      onClick={() => onEdit({ ...item, qty: optimisticQty })}
       disabled={controlsDisabled}
       aria-label={`Modify ${item.name}`}
       title="Modify"
@@ -226,6 +233,7 @@ export function MenuCard({
                 {optimisticQty}
               </p>
               {takeButton}
+              {takeFeedback}
             </div>
 
             <div className="flex min-h-0 min-w-0 flex-1 flex-col items-center justify-center text-center max-sm:w-full">
@@ -260,12 +268,7 @@ export function MenuCard({
             {optimisticQty}
           </p>
           {takeButton}
-
-          {errorMessage ? (
-            <p role="alert" className="mt-3 max-w-64 rounded-full bg-red-500/15 px-3 py-1 text-center text-xs font-semibold text-red-100">
-              {errorMessage}
-            </p>
-          ) : null}
+          {takeFeedback}
         </div>
 
         <div className={`mt-[clamp(1rem,2.4vh,1.75rem)] flex min-h-0 w-full flex-1 flex-col items-center justify-start text-center ${
