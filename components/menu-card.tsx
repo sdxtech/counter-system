@@ -66,27 +66,20 @@ export function MenuCard({
     />
   );
 
-  const takeFeedback = canTake ? (
-    <>
-      <p role="status" className="mt-2 min-h-4 text-xs text-white/70">
-        {takeState?.pending ? `Menyimpan ${takeState.pending} pengambilan…` : "\u00a0"}
-      </p>
-      {errorMessage && (
-        <div className="mt-3 max-w-64 rounded-lg bg-red-500/15 px-3 py-2 text-center text-xs text-red-100">
-          <p role="alert">{errorMessage}</p>
-          {takeState?.needsRefresh && (
-            <button
-              type="button"
-              onClick={() => window.location.reload()}
-              disabled={Boolean(takeQueue?.snapshot.pending)}
-              className="mt-2 font-semibold underline disabled:opacity-50"
-            >
-              Muat ulang stok
-            </button>
-          )}
-        </div>
+  const takeFeedback = canTake && errorMessage ? (
+    <div className="mt-3 max-w-64 rounded-lg bg-red-500/15 px-3 py-2 text-center text-xs text-red-100">
+      <p role="alert">{errorMessage}</p>
+      {takeState?.needsRefresh && (
+        <button
+          type="button"
+          onClick={() => window.location.reload()}
+          disabled={Boolean(takeQueue?.snapshot.pending)}
+          className="mt-2 font-semibold underline disabled:opacity-50"
+        >
+          Muat ulang stok
+        </button>
       )}
-    </>
+    </div>
   ) : null;
 
   const imageFrame = (
