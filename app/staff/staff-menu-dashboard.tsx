@@ -32,10 +32,15 @@ function StaffMenuDashboardContent({ items }: StaffMenuDashboardProps) {
 
   return (
     <>
-      <section className="relative min-h-screen overflow-hidden bg-[#0b0f23] text-white">
+      <section className="relative min-h-dvh overflow-hidden bg-[#0b0f23] text-white" inert={isFullMode}>
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,#0f0f23,#1a1a2e,#16213e)]" />
 
-        <div className="absolute right-5 top-5 z-20 flex flex-wrap justify-end gap-2.5 max-sm:right-2.5 max-sm:top-2.5 max-sm:gap-2.5">
+        <div className="absolute left-6 right-6 top-6 z-20 flex flex-wrap items-center justify-end gap-2">
+          {hasReachedMenuLimit ? (
+            <p role="status" className="mr-auto text-xs font-semibold text-white/55 max-sm:order-last max-sm:w-full max-sm:text-right">
+              Menu aktif maksimal 6 item.
+            </p>
+          ) : null}
           <Button
             type="button"
             variant="ghost"
@@ -58,28 +63,22 @@ function StaffMenuDashboardContent({ items }: StaffMenuDashboardProps) {
           <LogoutDialog triggerClassName={controlClassName} disabled={hasPendingTakes} />
         </div>
 
-        {hasReachedMenuLimit ? (
-          <p role="status" className="absolute left-4 top-4 z-20 text-xs font-semibold text-white/55">
-            Menu aktif maksimal 6 item.
-          </p>
-        ) : null}
-
         <MenuCarousel items={items} />
       </section>
 
       {isFullMode ? (
         <div className="fixed inset-0 z-40 overflow-hidden bg-[#0b0f23] text-white">
           <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,#0f0f23,#1a1a2e,#16213e)]" />
-          <div className="absolute right-5 top-5 z-20 flex flex-wrap justify-end gap-2.5 max-sm:right-2.5 max-sm:top-2.5 max-sm:gap-2.5">
+          <div className="absolute right-6 top-6 z-20">
             <Button
               type="button"
               onClick={() => setIsFullMode(false)}
               aria-label="Exit full mode"
               title="Exit full mode"
-              className={controlClassName}
+              className={`${controlClassName} !h-9 !w-9 !rounded-md !border-white/30`}
             >
               <span aria-hidden="true" className="text-base leading-none">
-                x
+                ×
               </span>
             </Button>
           </div>

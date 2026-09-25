@@ -35,7 +35,7 @@ export function DashboardPreview() {
       action={<Button>+ Add Menu</Button>}
     >
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-5 rounded-xl bg-[linear-gradient(135deg,#0f0f23,#1a1a2e,#16213e)] p-5 md:grid-cols-2 xl:grid-cols-3">
           {sampleMenuItems.map((item) => (
             <MenuCard key={item.id} item={item} />
           ))}

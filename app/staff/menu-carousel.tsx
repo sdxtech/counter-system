@@ -6,6 +6,7 @@ import { MenuCard, type MenuCardData } from "@/components/menu-card";
 import { deleteMenuItemAction } from "./actions";
 import { EditMenuDialog } from "./edit-menu-dialog";
 import { useTakeMenuQueue } from "@/components/take-menu-provider";
+import styles from "./menu-carousel.module.css";
 
 type MenuCarouselProps = {
   items: MenuCardData[];
@@ -22,12 +23,10 @@ export function MenuCarousel({ items, isFullMode = false }: MenuCarouselProps) {
   const isCompactGrid = items.length > 3;
   const gridClassName =
     items.length <= 1
-      ? "grid-cols-1"
+      ? styles.singleColumn
       : items.length === 2
-        ? "grid-cols-1 lg:grid-cols-2"
-        : items.length === 3
-          ? "grid-cols-1 lg:grid-cols-3"
-          : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
+        ? styles.twoColumns
+        : styles.threeColumns;
 
   function handleDelete(item: MenuCardData) {
     const confirmed = window.confirm(`Hapus menu "${item.name}"?`);
@@ -63,16 +62,16 @@ export function MenuCarousel({ items, isFullMode = false }: MenuCarouselProps) {
   return (
     <section
       aria-label="Menu grid"
-      className={`relative z-10 ${isCompactGrid || isFullMode ? "h-screen overflow-y-auto overflow-x-hidden" : "min-h-screen overflow-visible"}`}
+      className={`${styles.viewport} ${isFullMode ? styles.fullMode : ""}`}
     >
       {deleteError ? (
-        <p role="alert" className="absolute left-4 right-4 top-12 z-30 rounded-md bg-red-50 px-4 py-3 text-center text-sm font-semibold text-red-700">
+        <p role="alert" className="relative z-30 mx-4 mb-3 mt-16 rounded-md bg-red-50 px-4 py-3 text-center text-sm font-semibold text-red-700">
           {deleteError}
         </p>
       ) : null}
 
       <div
-        className={`grid w-full ${isCompactGrid ? "min-h-screen auto-rows-min gap-px overflow-visible px-4 pb-6 pt-16" : "min-h-screen"} ${gridClassName}`}
+        className={`${styles.grid} ${gridClassName}`}
       >
         {displayItems.map((item) => (
           <MenuCard
@@ -83,8 +82,6 @@ export function MenuCarousel({ items, isFullMode = false }: MenuCarouselProps) {
             onDelete={isFullMode ? undefined : handleDelete}
             controlsDisabled={isDeletePending || hasPendingTakes || Boolean(takeQueue?.snapshot.items[item.id]?.needsRefresh)}
             compact={isCompactGrid}
-            isFullMode={isFullMode}
-            itemCount={items.length}
           />
         ))}
       </div>
