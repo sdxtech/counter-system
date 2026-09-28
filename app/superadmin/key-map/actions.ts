@@ -17,11 +17,11 @@ const keyMapSchema = z.object({
 export async function saveKeyMapAction(input: unknown) {
   await requireUserRole(["superadmin"]);
   const parsed = keyMapSchema.safeParse(input);
-  if (!parsed.success) return { success: false, message: "Pilih site, menu, dan nomor numpad yang valid." };
+  if (!parsed.success) return { success: false, message: "Pilih site, menu, dan tombol angka yang valid." };
   const { siteId, bindings } = parsed.data;
   if (new Set(bindings.map((binding) => binding.numpad_digit)).size !== bindings.length ||
       new Set(bindings.map((binding) => binding.menu_position)).size !== bindings.length) {
-    return { success: false, message: "Satu nomor numpad hanya boleh dipakai oleh satu menu dalam site ini." };
+    return { success: false, message: "Satu tombol angka hanya boleh dipakai oleh satu posisi menu dalam site ini." };
   }
 
   const supabase = await createClient();

@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { takeMenuItemAction } from "@/app/staff/actions";
 import { TakeQueue } from "@/lib/take-queue";
-import { getNumpadDigit, type MenuKeyBinding } from "@/lib/menu-keymap";
+import { getTakeKeyDigit, type MenuKeyBinding } from "@/lib/menu-keymap";
 
 type TakeContextValue = {
   snapshot: ReturnType<TakeQueue["getSnapshot"]>;
@@ -32,7 +32,7 @@ export function TakeMenuProvider({ items, children, keyBindings }: {
     const heldKeys = new Set<string>();
 
     function handleKeyDown(event: KeyboardEvent) {
-      const digit = getNumpadDigit(event.code);
+      const digit = getTakeKeyDigit(event.code);
       if (digit === null || event.defaultPrevented || event.isComposing ||
           event.ctrlKey || event.altKey || event.metaKey || event.shiftKey || document.hidden) return;
       const menuId = bindingByDigit.get(digit);

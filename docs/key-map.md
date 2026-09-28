@@ -1,4 +1,4 @@
-# Key Map numpad berdasarkan posisi menu per site
+# Key Map angka keyboard dan numpad berdasarkan posisi menu per site
 
 ## Deployment
 
@@ -8,26 +8,28 @@
    Migrasi menambah tabel, aturan akses, dan fungsi penyimpanan; tidak mengubah stok atau menu.
    Pengaturan lama, jika ada, disalin sekali ke posisi kartu saat migrasi pertama kali dijalankan.
    Instalasi database baru memakai `database/schema.sql`, yang sudah memuat definisi ini.
-2. Deploy branch `fix/keymap-menu-positions` melalui tmux di VPS:
+2. Deploy branch `feat/take-keyboard-digits` melalui tmux di VPS:
 
    ```bash
    cd ~/counter-system
    git fetch origin
-   git switch fix/keymap-menu-positions
+   git switch feat/take-keyboard-digits
    sudo docker compose --env-file .env.docker up -d --build
    ```
 
 Migrasi database tidak otomatis dijalankan oleh Docker build. Jika belum diterapkan,
 pengaturan Key Map belum tersedia; Take dengan mouse/touch tetap berfungsi.
+Jika migrasi posisi menu sudah diterapkan, dukungan angka baris atas ini tidak
+memerlukan migrasi tambahan. Pilihan angka yang sudah tersimpan tetap berlaku.
 
 ## Penggunaan
 
 1. Login Superadmin, buka **Key Map**, pilih site.
-2. Atur Numpad 0–9 untuk **Menu 1** sampai **Menu 6**. Keenam posisi selalu tersedia,
-   termasuk ketika site belum memiliki menu. Bisa juga fokuskan pilihan numpad dan tekan tombol fisiknya.
+2. Atur angka 0–9 untuk **Menu 1** sampai **Menu 6**. Keenam posisi selalu tersedia,
+   termasuk ketika site belum memiliki menu. Bisa juga fokuskan pilihan dan tekan angka baris atas atau numpad.
 3. Pilih **Tidak diaktifkan** untuk menghapus pintasan posisi tersebut, kemudian **Simpan Key Map**.
 4. Muat ulang dashboard staff pada perangkat site itu setelah perubahan disimpan.
-5. Saat dashboard aktif, tekan numpad untuk mengambil satu porsi dari kartu pada posisi terkait.
+5. Saat dashboard aktif, tekan angka baris atas atau numpad untuk mengambil satu porsi dari kartu pada posisi terkait.
 
 Nomor yang sama boleh digunakan di site berbeda. Dalam satu site, satu nomor hanya
 berlaku untuk satu posisi. Pengaturan tersimpan per site dan posisi, sehingga tetap
@@ -41,8 +43,9 @@ tiga menu, pintasan Menu 4–6 tidak melakukan apa pun sampai posisi tersebut te
 Kapasitas aplikasi saat ini enam menu aktif per site.
 
 Pintasan bekerja pada mode biasa dan Full Mode melalui satu listener di provider
-antrean Take. Angka baris atas keyboard tidak dipakai. `KeyboardEvent.code` mengenali
-tombol fisik numpad, termasuk ketika Num Lock mati; tombol yang ditahan diabaikan
+antrean Take. `KeyboardEvent.code` mengenali `Digit0`–`Digit9` dan `Numpad0`–`Numpad9`.
+Keduanya memakai pengaturan angka yang sama. Numpad juga dikenali ketika Num Lock mati;
+tombol yang ditahan diabaikan
 setelah pengambilan pertama. Lepas dan tekan kembali untuk pengambilan berikutnya.
 Rujukan: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent
 

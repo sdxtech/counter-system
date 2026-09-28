@@ -3,7 +3,7 @@
 import { useState, useTransition, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { getNumpadDigit, MENU_POSITIONS, NUMPAD_DIGITS, type MenuKeyBinding } from "@/lib/menu-keymap";
+import { getTakeKeyDigit, MENU_POSITIONS, SHORTCUT_DIGITS, type MenuKeyBinding } from "@/lib/menu-keymap";
 import { saveKeyMapAction } from "./actions";
 
 type KeyMapEditorProps = {
@@ -23,7 +23,7 @@ export function KeyMapEditor({ sites, siteId, initialBindings, unavailable }: Ke
 
   function assignKey(position: number, value: string) {
     if (value !== "" && MENU_POSITIONS.some((other) => other !== position && selected[other] === value)) {
-      setFeedback({ success: false, message: `Numpad ${value} sudah dipakai menu lain. Pilih nomor berbeda.` });
+      setFeedback({ success: false, message: `Angka ${value} sudah dipakai menu lain. Pilih nomor berbeda.` });
       return;
     }
     setSelected((current) => ({ ...current, [position]: value }));
@@ -55,7 +55,8 @@ export function KeyMapEditor({ sites, siteId, initialBindings, unavailable }: Ke
       <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <h2 className="text-xl font-bold text-slate-950">Pintasan Take per Site</h2>
         <p className="mt-2 text-sm leading-6 text-slate-600">
-          Atur numpad 0–9 untuk Menu 1 sampai Menu 6 berdasarkan urutan kartu di dashboard.
+          Atur angka 0–9 untuk Menu 1 sampai Menu 6 berdasarkan urutan kartu di dashboard.
+          Angka di baris atas keyboard dan numpad memakai pengaturan yang sama.
           Pengaturan tetap berlaku saat nama atau isi menu diganti, termasuk setelah reset menu.
         </p>
         <label htmlFor="keymap-site" className="mt-5 block text-sm font-semibold text-slate-800">Site</label>
@@ -81,8 +82,8 @@ export function KeyMapEditor({ sites, siteId, initialBindings, unavailable }: Ke
 
       <form onSubmit={save} className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <div className="border-b border-slate-200 px-6 py-4">
-          <h3 className="font-bold text-slate-950">Posisi Menu dan Nomor Numpad</h3>
-          <p className="mt-1 text-sm text-slate-500">Pilih nomor, atau fokuskan pilihan numpad lalu tekan tombol numpad yang diinginkan.</p>
+          <h3 className="font-bold text-slate-950">Posisi Menu dan Tombol Angka</h3>
+          <p className="mt-1 text-sm text-slate-500">Pilih angka, atau fokuskan pilihan lalu tekan angka pada keyboard atau numpad.</p>
         </div>
         <fieldset disabled={isPending || unavailable || !siteId}>
           <legend className="sr-only">Pengaturan pintasan menu</legend>
@@ -95,12 +96,12 @@ export function KeyMapEditor({ sites, siteId, initialBindings, unavailable }: Ke
                   </div>
                   <select
                     id={`key-${position}`}
-                    aria-label={`Numpad untuk Menu ${position}`}
+                    aria-label={`Tombol angka untuk Menu ${position}`}
                     value={selected[position] ?? ""}
                     onChange={(event) => assignKey(position, event.target.value)}
                     onKeyDown={(event) => {
                       if (event.ctrlKey || event.altKey || event.metaKey || event.shiftKey || event.nativeEvent.isComposing) return;
-                      const digit = getNumpadDigit(event.code);
+                      const digit = getTakeKeyDigit(event.code);
                       if (digit === null) return;
                       event.preventDefault();
                       if (!event.repeat) assignKey(position, String(digit));
@@ -108,9 +109,9 @@ export function KeyMapEditor({ sites, siteId, initialBindings, unavailable }: Ke
                     className="h-11 w-full shrink-0 rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-950 disabled:opacity-50 sm:w-52"
                   >
                     <option value="">Tidak diaktifkan</option>
-                    {NUMPAD_DIGITS.map((digit) => {
+                    {SHORTCUT_DIGITS.map((digit) => {
                       const used = MENU_POSITIONS.some((other) => other !== position && selected[other] === String(digit));
-                      return <option key={digit} value={digit} disabled={used}>Numpad {digit}{used ? " — sudah dipakai" : ""}</option>;
+                      return <option key={digit} value={digit} disabled={used}>Angka {digit}{used ? " — sudah dipakai" : ""}</option>;
                     })}
                   </select>
                 </div>
@@ -120,7 +121,7 @@ export function KeyMapEditor({ sites, siteId, initialBindings, unavailable }: Ke
             <p className="mb-4 text-sm leading-6 text-slate-500">
               Urutan kartu dibaca dari kiri ke kanan, lalu baris berikutnya. Menu terbaru tampil di awal.
               Kamu bisa mengatur semua posisi meskipun belum ada menu. Posisi yang kosong tidak menjalankan Take.
-              Angka pada baris atas keyboard tidak menjalankan Take. Pintasan dijeda saat mengisi formulir atau membuka dialog.
+              Tekan angka tanpa Shift, Ctrl, Alt, atau Meta. Pintasan dijeda saat mengisi formulir atau membuka dialog.
             </p>
             <Button type="submit">{isPending ? "Menyimpan..." : "Simpan Key Map"}</Button>
           </div>
