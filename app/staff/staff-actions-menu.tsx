@@ -119,10 +119,10 @@ export function StaffActionsMenu({ onFullMode, menuCount, hasPendingTakes, needs
               setIsOpen(true);
             }
           }}
-          className="flex h-11 w-11 items-center justify-center rounded-lg border border-white/15 bg-white/10 text-white/90 shadow-lg transition hover:bg-orange-400/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300"
+          className="flex h-8 w-8 items-center justify-center rounded-md border border-white/15 bg-white/10 text-white/90 shadow-lg transition hover:bg-orange-400/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300"
         >
           {/* Bootstrap Icons: https://icons.getbootstrap.com/icons/list/ */}
-          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" className="bi bi-list" viewBox="0 0 16 16" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-list" viewBox="0 0 16 16" aria-hidden="true">
             <path fillRule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
           </svg>
         </button>

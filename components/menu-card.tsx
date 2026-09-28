@@ -52,9 +52,7 @@ export function MenuCard({
           disabled={isEmpty || !canTake || !takeState || takeState.needsRefresh}
           onClick={handleTake}
           className={styles.takeButton}
-        >
-          Take
-        </button>
+        />
         {canTake && errorMessage ? (
           <div className="mt-3 max-w-64 rounded-lg bg-red-500/15 px-3 py-2 text-center text-xs text-red-100">
             <p role="alert">{errorMessage}</p>
