@@ -1,4 +1,7 @@
-export type MenuKeyBinding = { menu_item_id: string; numpad_digit: number };
+export type MenuKeyBinding = { menu_position: number; numpad_digit: number };
+
+export const MAX_MENU_POSITIONS = 6;
+export const MENU_POSITIONS = Array.from({ length: MAX_MENU_POSITIONS }, (_, index) => index + 1);
 
 export const NUMPAD_DIGITS = Array.from({ length: 10 }, (_, digit) => digit);
 

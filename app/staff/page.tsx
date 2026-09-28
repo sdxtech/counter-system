@@ -48,7 +48,8 @@ async function getMenuItems(siteId: string | null): Promise<MenuCardData[]> {
     .select("id, name, note, nutrition_fact, qty, active_image_id")
     .eq("is_active", true)
     .eq("site_id", siteId)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .order("id", { ascending: false });
   let menuItems = menuResult.data as MenuItemRow[] | null;
   let menuError = menuResult.error;
   let hasNutritionFactColumn = true;
@@ -59,7 +60,8 @@ async function getMenuItems(siteId: string | null): Promise<MenuCardData[]> {
       .select("id, name, note, qty, active_image_id")
       .eq("is_active", true)
       .eq("site_id", siteId)
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: false });
 
     menuItems = fallbackResult.data as MenuItemRow[] | null;
     menuError = fallbackResult.error;
@@ -108,8 +110,8 @@ async function getMenuItems(siteId: string | null): Promise<MenuCardData[]> {
 async function getKeyBindings(siteId: string | null): Promise<MenuKeyBinding[]> {
   if (!siteId) return [];
   const supabase = await createClient();
-  const { data, error } = await supabase.from("menu_key_bindings")
-    .select("menu_item_id, numpad_digit").eq("site_id", siteId);
+  const { data, error } = await supabase.from("site_menu_slot_keys")
+    .select("menu_position, numpad_digit").eq("site_id", siteId);
   if (error) {
     // Keep mouse/touch Take working if the key-map migration is not installed yet.
     console.error("Failed to load staff key map:", error.code, error.message);

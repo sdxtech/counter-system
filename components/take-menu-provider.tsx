@@ -24,10 +24,11 @@ export function TakeMenuProvider({ items, children, keyBindings }: {
 
   useEffect(() => {
     if (!keyBindings?.length) return;
-    const activeIds = new Set(items.map((item) => item.id));
-    const bindingByDigit = new Map(keyBindings
-      .filter((binding) => activeIds.has(binding.menu_item_id))
-      .map((binding) => [binding.numpad_digit, binding.menu_item_id]));
+    const bindingByDigit = new Map<number, string>();
+    for (const binding of keyBindings) {
+      const item = items[binding.menu_position - 1];
+      if (item) bindingByDigit.set(binding.numpad_digit, item.id);
+    }
     const heldKeys = new Set<string>();
 
     function handleKeyDown(event: KeyboardEvent) {

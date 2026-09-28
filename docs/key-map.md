@@ -1,17 +1,19 @@
-# Key Map numpad per site
+# Key Map numpad berdasarkan posisi menu per site
 
 ## Deployment
 
 1. Untuk database yang sudah berjalan, buka Supabase SQL Editor dan jalankan seluruh isi
-   `supabase/migrations/202609280001_site_menu_keymaps.sql` sekali sebelum deploy aplikasi.
+   `supabase/migrations/202609280002_site_menu_slot_keymaps.sql` sebelum deploy aplikasi.
+   Cukup migrasi ini: bisa dijalankan baik migrasi Key Map sebelumnya sudah diterapkan maupun belum.
    Migrasi menambah tabel, aturan akses, dan fungsi penyimpanan; tidak mengubah stok atau menu.
+   Pengaturan lama, jika ada, disalin sekali ke posisi kartu saat migrasi pertama kali dijalankan.
    Instalasi database baru memakai `database/schema.sql`, yang sudah memuat definisi ini.
-2. Deploy branch `feat/site-numpad-keymap` melalui tmux di VPS:
+2. Deploy branch `fix/keymap-menu-positions` melalui tmux di VPS:
 
    ```bash
    cd ~/counter-system
    git fetch origin
-   git switch feat/site-numpad-keymap
+   git switch fix/keymap-menu-positions
    sudo docker compose --env-file .env.docker up -d --build
    ```
 
@@ -21,15 +23,22 @@ pengaturan Key Map belum tersedia; Take dengan mouse/touch tetap berfungsi.
 ## Penggunaan
 
 1. Login Superadmin, buka **Key Map**, pilih site.
-2. Pilih Numpad 0–9 untuk setiap menu aktif. Bisa juga fokuskan pilihan numpad dan tekan tombol fisiknya.
-3. Pilih **Tidak diaktifkan** untuk menghapus pintasan menu tersebut, kemudian **Simpan Key Map**.
+2. Atur Numpad 0–9 untuk **Menu 1** sampai **Menu 6**. Keenam posisi selalu tersedia,
+   termasuk ketika site belum memiliki menu. Bisa juga fokuskan pilihan numpad dan tekan tombol fisiknya.
+3. Pilih **Tidak diaktifkan** untuk menghapus pintasan posisi tersebut, kemudian **Simpan Key Map**.
 4. Muat ulang dashboard staff pada perangkat site itu setelah perubahan disimpan.
-5. Saat dashboard aktif, tekan numpad untuk mengambil satu porsi dari menu terkait.
+5. Saat dashboard aktif, tekan numpad untuk mengambil satu porsi dari kartu pada posisi terkait.
 
 Nomor yang sama boleh digunakan di site berbeda. Dalam satu site, satu nomor hanya
-berlaku untuk satu menu. Pengaturan mengacu pada ID menu, bukan urutan tampilan.
-Mengubah nama menu mempertahankan pengaturan; menghapus menu menghapus ikatannya.
-Menu baru setelah reset perlu diatur kembali. Tidak ada pintasan yang aktif otomatis.
+berlaku untuk satu posisi. Pengaturan tersimpan per site dan posisi, sehingga tetap
+berlaku saat menu dihapus, di-reset, atau diganti nama/isinya. Tidak ada pintasan yang aktif otomatis.
+
+Menu 1 adalah kartu pertama, Menu 2 kartu kedua, dan seterusnya dari kiri ke kanan,
+lalu baris berikutnya. Urutan data mengikuti `created_at DESC, id DESC`, sama untuk
+layout biasa dan Full Mode. Menu baru masuk di awal, sehingga kartu berikutnya bergeser.
+Tombol selalu mengambil kartu yang saat itu berada di posisi terkait. Jika hanya ada
+tiga menu, pintasan Menu 4–6 tidak melakukan apa pun sampai posisi tersebut terisi.
+Kapasitas aplikasi saat ini enam menu aktif per site.
 
 Pintasan bekerja pada mode biasa dan Full Mode melalui satu listener di provider
 antrean Take. Angka baris atas keyboard tidak dipakai. `KeyboardEvent.code` mengenali
@@ -43,13 +52,13 @@ pengambilan yang belum pasti mengikuti penjagaan yang sama dengan tombol Take.
 
 ## Penyimpanan dan akses
 
-`menu_key_bindings` menyimpan pasangan site, ID menu, dan nomor numpad. Foreign key
-memastikan menu berasal dari site yang sama dan membersihkan pengaturan saat menu
-dihapus. Unique constraint mencegah dua menu menggunakan nomor yang sama dalam satu site.
+`site_menu_slot_keys` menyimpan site, posisi 1–6, dan nomor numpad. Pengaturan hanya
+bergantung pada site, sehingga reset menu tidak menghapusnya. Unique constraint
+mencegah dua posisi menggunakan nomor yang sama dalam satu site.
 
 Staff hanya dapat membaca pengaturan site miliknya melalui RLS. Penyimpanan dilakukan
-oleh fungsi `save_site_menu_keymap`, yang memeriksa peran Superadmin, mengunci site,
-memvalidasi menu aktif, dan mengganti seluruh pengaturan site dalam satu transaksi.
+oleh fungsi `save_site_menu_slot_keymap`, yang memeriksa peran Superadmin, mengunci site,
+memvalidasi rentang posisi/nomor, dan mengganti seluruh pengaturan site dalam satu transaksi.
 Server Action juga memeriksa peran dan memvalidasi input. Tidak ada akses service-role
 di browser. Simpan yang gagal membatalkan transaksi, termasuk penghapusan ikatan lama.
 
