@@ -3,10 +3,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { MenuCardData } from "@/components/menu-card";
-import { AddMenuDialog } from "./add-menu-dialog";
 import { MenuCarousel } from "./menu-carousel";
-import { ResetMenusDialog } from "./reset-menus-dialog";
-import { LogoutDialog } from "./logout-dialog";
+import { StaffActionsMenu } from "./staff-actions-menu";
 import { TakeMenuProvider, useTakeMenuQueue } from "@/components/take-menu-provider";
 
 type StaffMenuDashboardProps = {
@@ -35,33 +33,17 @@ function StaffMenuDashboardContent({ items }: StaffMenuDashboardProps) {
       <section className="relative min-h-dvh overflow-hidden bg-[#0b0f23] text-white" inert={isFullMode}>
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,#0f0f23,#1a1a2e,#16213e)]" />
 
-        <div className="absolute left-6 right-6 top-6 z-20 flex flex-wrap items-center justify-end gap-2">
-          {hasReachedMenuLimit ? (
-            <p role="status" className="mr-auto text-xs font-semibold text-white/55 max-sm:order-last max-sm:w-full max-sm:text-right">
-              Menu aktif maksimal 6 item.
-            </p>
-          ) : null}
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => setIsFullMode(true)}
-            className={controlClassName}
-          >
-            Full Mode
-          </Button>
-          <AddMenuDialog
-            disabled={hasReachedMenuLimit || hasPendingTakes}
-            triggerLabel="Add Menu"
-            triggerClassName={controlClassName}
-            showTriggerIcon={false}
-          />
-          <ResetMenusDialog
-            disabled={items.length === 0 || hasPendingTakes || needsStockRefresh}
-            triggerLabel="Reset"
-            triggerClassName={controlClassName}
-          />
-          <LogoutDialog triggerClassName={controlClassName} disabled={hasPendingTakes} />
-        </div>
+        {hasReachedMenuLimit ? (
+          <p role="status" className="absolute left-4 top-7 z-20 text-xs font-semibold text-white/55">
+            Menu aktif maksimal 6 item.
+          </p>
+        ) : null}
+        <StaffActionsMenu
+          onFullMode={() => setIsFullMode(true)}
+          menuCount={items.length}
+          hasPendingTakes={hasPendingTakes}
+          needsStockRefresh={needsStockRefresh}
+        />
 
         <MenuCarousel items={items} />
       </section>
@@ -74,6 +56,7 @@ function StaffMenuDashboardContent({ items }: StaffMenuDashboardProps) {
               type="button"
               onClick={() => setIsFullMode(false)}
               aria-label="Exit full mode"
+              autoFocus
               title="Exit full mode"
               className={`${controlClassName} !h-9 !w-9 !rounded-md !border-white/30`}
             >
