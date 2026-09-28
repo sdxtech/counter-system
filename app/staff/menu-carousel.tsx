@@ -60,19 +60,17 @@ export function MenuCarousel({ items, isFullMode = false }: MenuCarouselProps) {
         ];
 
   return (
-    <section
-      aria-label="Menu grid"
-      className={`${styles.viewport} ${isFullMode ? styles.fullMode : ""}`}
-    >
-      {deleteError ? (
-        <p role="alert" className="relative z-30 mx-4 mb-3 mt-16 rounded-md bg-red-50 px-4 py-3 text-center text-sm font-semibold text-red-700">
-          {deleteError}
-        </p>
-      ) : null}
-
+    <>
       <div
-        className={`${styles.grid} ${gridClassName}`}
+        role="region"
+        aria-label="Menu grid"
+        className={`${styles.grid} ${gridClassName} ${isFullMode ? styles.fullMode : ""}`}
       >
+        {deleteError ? (
+          <p role="alert" className="col-span-full rounded-md bg-red-50 px-4 py-3 text-center text-sm font-semibold text-red-700">
+            {deleteError}
+          </p>
+        ) : null}
         {displayItems.map((item) => (
           <MenuCard
             key={item.id}
@@ -91,6 +89,6 @@ export function MenuCarousel({ items, isFullMode = false }: MenuCarouselProps) {
         item={activeEditItem}
         onClose={() => setActiveEditItem(null)}
       />
-    </section>
+    </>
   );
 }
