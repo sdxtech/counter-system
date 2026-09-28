@@ -11,6 +11,12 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      menu_key_bindings: {
+        Row: { site_id: string; menu_item_id: string; numpad_digit: number };
+        Insert: { site_id: string; menu_item_id: string; numpad_digit: number };
+        Update: { numpad_digit?: number };
+        Relationships: [];
+      };
       sites: {
         Row: {
           id: string;
@@ -203,6 +209,10 @@ export type Database = {
       };
     };
     Functions: {
+      save_site_menu_keymap: {
+        Args: { p_site_id: string; p_bindings: Json };
+        Returns: undefined;
+      };
       take_menu_item: {
         Args: { p_menu_item_id: string };
         Returns: Database["public"]["Tables"]["menu_items"]["Row"][];

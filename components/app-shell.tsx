@@ -20,6 +20,7 @@ const navigationItems: Record<NavigationRole, { href: string; label: string }[]>
   superadmin: [
     { href: "/superadmin", label: "Dashboard" },
     { href: "/superadmin/users", label: "User Management" },
+    { href: "/superadmin/key-map", label: "Key Map" },
     {
       href: "/superadmin/sites",
       label: "Site & Deployment Management",

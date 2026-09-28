@@ -4,6 +4,7 @@ import type { MenuCardData } from "@/components/menu-card";
 import { requireUserRole } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
 import { StaffMenuDashboard } from "./staff-menu-dashboard";
+import type { MenuKeyBinding } from "@/lib/menu-keymap";
 
 export const dynamic = "force-dynamic";
 const NUTRITION_NOTE_DELIMITER = "\n\n[NUTRITION_FACT]\n";
@@ -104,6 +105,19 @@ async function getMenuItems(siteId: string | null): Promise<MenuCardData[]> {
   });
 }
 
+async function getKeyBindings(siteId: string | null): Promise<MenuKeyBinding[]> {
+  if (!siteId) return [];
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("menu_key_bindings")
+    .select("menu_item_id, numpad_digit").eq("site_id", siteId);
+  if (error) {
+    // Keep mouse/touch Take working if the key-map migration is not installed yet.
+    console.error("Failed to load staff key map:", error.code, error.message);
+    return [];
+  }
+  return data ?? [];
+}
+
 export default async function StaffPage() {
   const { role, siteId } = await requireUserRole(["staff", "superadmin"]);
 
@@ -113,7 +127,7 @@ export default async function StaffPage() {
     console.error("Failed to cleanup expired menus", error);
   }
 
-  const menuItems = await getMenuItems(siteId);
+  const [menuItems, keyBindings] = await Promise.all([getMenuItems(siteId), getKeyBindings(siteId)]);
 
   return (
     <AppShell
@@ -123,7 +137,7 @@ export default async function StaffPage() {
       showHeader={false}
       showSidebar={false}
     >
-      <StaffMenuDashboard items={menuItems} />
+      <StaffMenuDashboard items={menuItems} keyBindings={keyBindings} />
     </AppShell>
   );
 }

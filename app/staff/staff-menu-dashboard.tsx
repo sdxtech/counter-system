@@ -6,14 +6,16 @@ import type { MenuCardData } from "@/components/menu-card";
 import { MenuCarousel } from "./menu-carousel";
 import { StaffActionsMenu } from "./staff-actions-menu";
 import { TakeMenuProvider, useTakeMenuQueue } from "@/components/take-menu-provider";
+import type { MenuKeyBinding } from "@/lib/menu-keymap";
 
 type StaffMenuDashboardProps = {
   items: MenuCardData[];
+  keyBindings?: MenuKeyBinding[];
 };
 
-export function StaffMenuDashboard({ items }: StaffMenuDashboardProps) {
+export function StaffMenuDashboard({ items, keyBindings }: StaffMenuDashboardProps) {
   return (
-    <TakeMenuProvider items={items}>
+    <TakeMenuProvider items={items} keyBindings={keyBindings}>
       <StaffMenuDashboardContent items={items} />
     </TakeMenuProvider>
   );
