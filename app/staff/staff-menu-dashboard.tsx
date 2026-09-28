@@ -24,7 +24,6 @@ function StaffMenuDashboardContent({ items }: StaffMenuDashboardProps) {
   const takeQueue = useTakeMenuQueue();
   const hasPendingTakes = Boolean(takeQueue?.snapshot.pending);
   const needsStockRefresh = Object.values(takeQueue?.snapshot.items ?? {}).some((item) => item.needsRefresh);
-  const hasReachedMenuLimit = items.length >= 6;
   const controlClassName =
     "inline-flex h-auto items-center justify-center rounded-[12px] border border-transparent !bg-white/10 px-2 py-1 text-xs font-semibold uppercase !text-white/80 !shadow-none !ring-0 backdrop-blur-md transition hover:-translate-y-0.5 hover:!bg-[#ff9500]/20 hover:!text-white focus-visible:border-transparent focus-visible:outline-none focus-visible:!ring-0 disabled:!bg-white/5 disabled:!text-white/35";
 
@@ -33,11 +32,6 @@ function StaffMenuDashboardContent({ items }: StaffMenuDashboardProps) {
       <section className="relative min-h-dvh overflow-hidden bg-[#0b0f23] text-white" inert={isFullMode}>
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,#0f0f23,#1a1a2e,#16213e)]" />
 
-        {hasReachedMenuLimit ? (
-          <p role="status" className="absolute left-4 top-7 z-20 text-xs font-semibold text-white/55">
-            Menu aktif maksimal 6 item.
-          </p>
-        ) : null}
         <StaffActionsMenu
           onFullMode={() => setIsFullMode(true)}
           menuCount={items.length}
@@ -51,14 +45,14 @@ function StaffMenuDashboardContent({ items }: StaffMenuDashboardProps) {
       {isFullMode ? (
         <div className="fixed inset-0 z-40 overflow-hidden bg-[#0b0f23] text-white">
           <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,#0f0f23,#1a1a2e,#16213e)]" />
-          <div className="absolute right-6 top-6 z-20">
+          <div className="absolute inset-y-0 left-0 z-20 flex w-12 justify-center border-r border-white/10 bg-[#0b0f23]/80 pt-4">
             <Button
               type="button"
               onClick={() => setIsFullMode(false)}
               aria-label="Exit full mode"
               autoFocus
               title="Exit full mode"
-              className={`${controlClassName} !h-9 !w-9 !rounded-md !border-white/30`}
+              className={`${controlClassName} !h-8 !w-8 !rounded-md !border-white/30`}
             >
               <span aria-hidden="true" className="text-base leading-none">
                 ×

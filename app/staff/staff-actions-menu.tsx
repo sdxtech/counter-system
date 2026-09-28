@@ -17,7 +17,7 @@ type DialogAction = "add" | "reset" | "logout";
 export function StaffActionsMenu({ onFullMode, menuCount, hasPendingTakes, needsStockRefresh }: StaffActionsMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeDialog, setActiveDialog] = useState<DialogAction | null>(null);
-  const rootRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -65,7 +65,7 @@ export function StaffActionsMenu({ onFullMode, menuCount, hasPendingTakes, needs
     return () => document.removeEventListener("keydown", keepFocusInDialog);
   }, [activeDialog]);
 
-  function handleMenuKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+  function handleMenuKeyDown(event: KeyboardEvent<HTMLElement>) {
     if (event.key === "Escape") {
       event.preventDefault();
       setIsOpen(false);
@@ -94,9 +94,10 @@ export function StaffActionsMenu({ onFullMode, menuCount, hasPendingTakes, needs
 
   return (
     <>
-      <div
+      <nav
         ref={rootRef}
-        className="absolute right-4 top-4 z-30"
+        aria-label="Navigasi aksi menu"
+        className="fixed inset-y-0 left-0 z-30 flex w-12 justify-center border-r border-white/10 bg-[#0b0f23]/80 pt-4"
         onKeyDown={handleMenuKeyDown}
         onBlur={(event) => {
           if (!event.currentTarget.contains(event.relatedTarget)) setIsOpen(false);
@@ -128,7 +129,7 @@ export function StaffActionsMenu({ onFullMode, menuCount, hasPendingTakes, needs
         </button>
 
         {isOpen ? (
-          <div ref={panelRef} id={menuId} role="menu" aria-labelledby={`${menuId}-trigger`} className="absolute right-0 top-full mt-2 max-h-[calc(100dvh-5rem)] w-48 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-xl border border-white/15 bg-[#1a1a2e] p-1.5 shadow-2xl">
+          <div ref={panelRef} id={menuId} role="menu" aria-labelledby={`${menuId}-trigger`} className="absolute left-full top-4 ml-2 max-h-[calc(100dvh-2rem)] w-48 max-w-[calc(100vw-4rem)] overflow-y-auto rounded-xl border border-white/15 bg-[#1a1a2e] p-1.5 shadow-2xl">
             <button type="button" role="menuitem" className={itemClassName} onClick={() => { setIsOpen(false); onFullMode(); }}>
               Full Mode
             </button>
@@ -141,9 +142,14 @@ export function StaffActionsMenu({ onFullMode, menuCount, hasPendingTakes, needs
             <button type="button" role="menuitem" className={itemClassName} disabled={hasPendingTakes} onClick={() => openDialog("logout")}>
               Logout
             </button>
+            {menuCount >= 6 ? (
+              <div role="none" className="mt-1 border-t border-white/10 px-4 py-2">
+                <p role="status" className="text-xs text-white/55">Menu aktif maksimal 6 item.</p>
+              </div>
+            ) : null}
           </div>
         ) : null}
-      </div>
+      </nav>
 
       <div ref={dialogRef}>
         {activeDialog === "add" ? <AddMenuDialog disabled={addDisabled} onClose={closeDialog} /> : null}
