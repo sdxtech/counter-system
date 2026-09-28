@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { MenuCardData } from "@/components/menu-card";
 import { MenuCarousel } from "./menu-carousel";
@@ -21,6 +21,23 @@ export function StaffMenuDashboard({ items }: StaffMenuDashboardProps) {
 
 function StaffMenuDashboardContent({ items }: StaffMenuDashboardProps) {
   const [isFullMode, setIsFullMode] = useState(false);
+  useEffect(() => {
+    const elements = [document.documentElement, document.body];
+    const previousStyles = elements.map((element) => ({
+      overflow: element.style.overflow,
+      overscrollBehavior: element.style.overscrollBehavior,
+    }));
+    for (const element of elements) {
+      element.style.overflow = "hidden";
+      element.style.overscrollBehavior = "none";
+    }
+    return () => {
+      elements.forEach((element, index) => {
+        element.style.overflow = previousStyles[index].overflow;
+        element.style.overscrollBehavior = previousStyles[index].overscrollBehavior;
+      });
+    };
+  }, []);
   const takeQueue = useTakeMenuQueue();
   const hasPendingTakes = Boolean(takeQueue?.snapshot.pending);
   const needsStockRefresh = Object.values(takeQueue?.snapshot.items ?? {}).some((item) => item.needsRefresh);
@@ -29,7 +46,7 @@ function StaffMenuDashboardContent({ items }: StaffMenuDashboardProps) {
 
   return (
     <>
-      <section className="relative min-h-dvh overflow-hidden bg-[#0b0f23] text-white" inert={isFullMode}>
+      <section className="fixed inset-0 overflow-hidden bg-[#0b0f23] text-white" inert={isFullMode}>
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,#0f0f23,#1a1a2e,#16213e)]" />
 
         <StaffActionsMenu
@@ -45,7 +62,7 @@ function StaffMenuDashboardContent({ items }: StaffMenuDashboardProps) {
       {isFullMode ? (
         <div className="fixed inset-0 z-40 overflow-hidden bg-[#0b0f23] text-white">
           <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,#0f0f23,#1a1a2e,#16213e)]" />
-          <div className="absolute inset-y-0 left-0 z-20 flex w-12 justify-center border-r border-white/10 bg-[#0b0f23]/80 pt-4">
+          <div className="absolute inset-y-0 left-0 z-20 flex w-12 justify-center pt-4">
             <Button
               type="button"
               onClick={() => setIsFullMode(false)}

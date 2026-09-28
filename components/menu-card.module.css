@@ -153,10 +153,113 @@
   min-width: 0;
   min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 0.65rem 0.85rem;
   overflow-wrap: anywhere;
   scrollbar-width: thin;
   scrollbar-color: #ffb23e80 transparent;
+}
+
+/* Each dashboard card uses its allocated grid row as its size container. */
+.card.fitViewport {
+  container-type: size;
+  display: grid;
+  grid-template-rows: minmax(0, 1.2fr) minmax(0, 1.3fr) minmax(0, 0.35fr) minmax(0, 1.5fr);
+  align-items: stretch;
+  justify-items: center;
+  height: 100%;
+  min-height: 0;
+  max-width: 28rem;
+}
+
+.card.fitViewport .counter {
+  position: relative;
+  justify-content: center;
+  width: 100%;
+  min-height: 0;
+  margin-bottom: 0;
+}
+
+.card.fitViewport .status {
+  font-size: clamp(0.625rem, 3cqh, 1.6rem);
+}
+
+.card.fitViewport .quantity {
+  margin-block: 0.5cqh;
+  font-size: clamp(1.25rem, 10cqh, 5rem);
+}
+
+.card.fitViewport .takeButton {
+  width: min(100%, clamp(3rem, 22cqh, 10rem));
+  height: clamp(24px, 6cqh, 44px);
+  min-height: 0;
+  flex-shrink: 0;
+}
+
+.card.fitViewport .photo {
+  align-self: center;
+  width: min(100%, 44cqh);
+  max-height: 100%;
+  aspect-ratio: 3 / 2;
+}
+
+.card.fitViewport .name,
+.card.fitViewport .details {
+  width: min(100%, 44cqh);
+  height: 100%;
+  min-height: 0;
+}
+
+.card.fitViewport .name {
+  padding: 0;
+  overflow: hidden;
+  font-size: clamp(0.625rem, 2.8cqh, 1.375rem);
+}
+
+.card.fitViewport .detailSection {
+  padding: clamp(3px, 1.5cqh, 10px) clamp(4px, 2cqh, 14px);
+}
+
+.card.fitViewport .detailSection h3,
+.card.fitViewport .detailSection p {
+  font-size: clamp(0.625rem, 2.2cqh, 0.875rem);
+}
+
+.card.fitViewport .detailSection p {
+  margin-top: 1cqh;
+}
+
+.card.fitViewport .managementControls {
+  top: 0.5cqh;
+  right: 0.5cqh;
+  gap: 0.5cqh;
+}
+
+.card.fitViewport .managementButton {
+  width: clamp(20px, 6cqh, 36px);
+  height: clamp(20px, 6cqh, 36px);
+}
+
+.card.fitViewport .placeholder {
+  gap: 1cqh;
+  padding: 1cqh;
+  font-size: clamp(0.625rem, 2cqh, 0.875rem);
+}
+
+.card.fitViewport .placeholder svg {
+  flex-shrink: 1;
+  min-height: 0;
+}
+
+.card.fitViewport .takeFeedback {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  max-width: none;
+  margin: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: #381d2f;
 }
 
 .detailSection + .detailSection {

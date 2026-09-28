@@ -97,7 +97,7 @@ export function StaffActionsMenu({ onFullMode, menuCount, hasPendingTakes, needs
       <nav
         ref={rootRef}
         aria-label="Navigasi aksi menu"
-        className="fixed inset-y-0 left-0 z-30 flex w-12 justify-center border-r border-white/10 bg-[#0b0f23]/80 pt-4"
+        className="fixed inset-y-0 left-0 z-30 flex w-12 justify-center pt-4"
         onKeyDown={handleMenuKeyDown}
         onBlur={(event) => {
           if (!event.currentTarget.contains(event.relatedTarget)) setIsOpen(false);

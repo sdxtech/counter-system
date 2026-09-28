@@ -19,6 +19,7 @@ type MenuCardProps = {
   onDelete?: (item: MenuCardData) => void;
   controlsDisabled?: boolean;
   compact?: boolean;
+  fitViewport?: boolean;
 };
 
 export function MenuCard({
@@ -28,6 +29,7 @@ export function MenuCard({
   onDelete,
   controlsDisabled = false,
   compact = false,
+  fitViewport = false,
 }: MenuCardProps) {
   const takeQueue = useTakeMenuQueue();
   const takeState = takeQueue?.snapshot.items[item.id];
@@ -42,7 +44,7 @@ export function MenuCard({
   }
 
   return (
-    <article className={`${styles.card} ${compact ? styles.compact : ""}`}>
+    <article className={`${styles.card} ${compact ? styles.compact : ""} ${fitViewport ? styles.fitViewport : ""}`}>
       <div className={styles.counter}>
         <p className={styles.status}>{statusLabel}</p>
         <p className={styles.quantity}>{optimisticQty}</p>
@@ -54,7 +56,7 @@ export function MenuCard({
           className={styles.takeButton}
         />
         {canTake && errorMessage ? (
-          <div className="mt-3 max-w-64 rounded-lg bg-red-500/15 px-3 py-2 text-center text-xs text-red-100">
+          <div className={`${styles.takeFeedback} mt-3 max-w-64 rounded-lg bg-red-500/15 px-3 py-2 text-center text-xs text-red-100`}>
             <p role="alert">{errorMessage}</p>
             {takeState?.needsRefresh && (
               <button

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { MenuCard, type MenuCardData } from "@/components/menu-card";
 import { deleteMenuItemAction } from "./actions";
@@ -64,10 +64,14 @@ export function MenuCarousel({ items, isFullMode = false }: MenuCarouselProps) {
       <div
         role="region"
         aria-label="Menu grid"
-        className={`${styles.grid} ${gridClassName} ${isFullMode ? styles.fullMode : ""}`}
+        className={`${styles.grid} ${gridClassName}`}
+        style={{
+          "--small-rows": Math.ceil(displayItems.length / 2),
+          "--large-rows": Math.ceil(displayItems.length / 3),
+        } as CSSProperties}
       >
         {deleteError ? (
-          <p role="alert" className="col-span-full rounded-md bg-red-50 px-4 py-3 text-center text-sm font-semibold text-red-700">
+          <p role="alert" className="absolute left-16 right-4 top-2 z-30 rounded-md bg-red-50 px-4 py-3 text-center text-sm font-semibold text-red-700">
             {deleteError}
           </p>
         ) : null}
@@ -80,6 +84,7 @@ export function MenuCarousel({ items, isFullMode = false }: MenuCarouselProps) {
             onDelete={isFullMode ? undefined : handleDelete}
             controlsDisabled={isDeletePending || hasPendingTakes || Boolean(takeQueue?.snapshot.items[item.id]?.needsRefresh)}
             compact={isCompactGrid}
+            fitViewport
           />
         ))}
       </div>

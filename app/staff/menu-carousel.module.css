@@ -1,31 +1,26 @@
-.fullMode {
-  height: 100dvh;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-
 .grid {
   position: relative;
   z-index: 10;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  align-content: start;
-  align-items: start;
-  gap: 3.5rem clamp(1.5rem, 6vw, 7rem);
-  min-height: 100dvh;
+  grid-template-rows: repeat(var(--small-rows, 1), minmax(0, 1fr));
+  align-items: stretch;
+  gap: 1rem clamp(0.75rem, 3vw, 3rem);
+  height: 100%;
+  min-height: 0;
+  overflow: clip;
   /* Reserve the left navigation rail while keeping cards near the top. */
   padding: 1rem 1rem 1rem 4rem;
 }
 
-@media (min-width: 640px) and (max-width: 1023px) {
-  .twoColumns,
-  .threeColumns {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.twoColumns,
+.threeColumns {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 @media (min-width: 1024px) {
   .grid {
+    grid-template-rows: repeat(var(--large-rows, 1), minmax(0, 1fr));
     padding: 1rem 1.5rem 1rem 4.5rem;
   }
 
