@@ -157,9 +157,14 @@
 
 /* Each dashboard card uses its allocated grid row as its size container. */
 .card.fitViewport {
+  --status-size: clamp(0.625rem, 3cqh, 1.6rem);
+  --quantity-size: clamp(1.25rem, 10cqh, 5rem);
+  --take-height: clamp(24px, 6cqh, 44px);
+  --section-gap: clamp(4px, 0.8cqh, 8px);
   container-type: size;
   display: grid;
-  grid-template-rows: minmax(0, 1.2fr) minmax(0, 1.3fr) minmax(0, 0.35fr) minmax(0, 1.5fr);
+  grid-template-rows: max-content max-content max-content minmax(0, 1fr);
+  row-gap: var(--section-gap);
   align-items: stretch;
   justify-items: center;
   height: 100%;
@@ -169,32 +174,33 @@
 
 .card.fitViewport .counter {
   position: relative;
-  justify-content: center;
   width: 100%;
   min-height: 0;
   margin-bottom: 0;
+  /* Preserve the old centered counter's top position, without its empty bottom half.
+     Its old grid row occupied 1.2 / 4.35 of the card height. */
+  padding-top: max(0px, calc((27.5862cqh - var(--status-size) * 1.2 - var(--quantity-size) - 1cqh - var(--take-height)) / 2));
 }
 
 .card.fitViewport .status {
-  font-size: clamp(0.625rem, 3cqh, 1.6rem);
+  font-size: var(--status-size);
 }
 
 .card.fitViewport .quantity {
   margin-block: 0.5cqh;
-  font-size: clamp(1.25rem, 10cqh, 5rem);
+  font-size: var(--quantity-size);
 }
 
 .card.fitViewport .takeButton {
   width: min(100%, clamp(3rem, 22cqh, 10rem));
-  height: clamp(24px, 6cqh, 44px);
+  height: var(--take-height);
   min-height: 0;
   flex-shrink: 0;
 }
 
 .card.fitViewport .photo {
-  align-self: center;
+  align-self: start;
   width: min(100%, 44cqh);
-  max-height: 100%;
   aspect-ratio: 3 / 2;
 }
 
@@ -206,13 +212,26 @@
 }
 
 .card.fitViewport .name {
+  height: auto;
   padding: 0;
   overflow: hidden;
   font-size: clamp(0.625rem, 2.8cqh, 1.375rem);
 }
 
+.card.fitViewport .details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--section-gap);
+}
+
 .card.fitViewport .detailSection {
-  padding: clamp(3px, 1.5cqh, 10px) clamp(4px, 2cqh, 14px);
+  flex: 0 1 auto;
+  padding: 0 clamp(4px, 2cqh, 14px);
+}
+
+.card.fitViewport .description {
+  flex-shrink: 0;
+  max-height: min(14cqh, 7rem);
 }
 
 .card.fitViewport .detailSection h3,
@@ -221,7 +240,7 @@
 }
 
 .card.fitViewport .detailSection p {
-  margin-top: 1cqh;
+  margin-top: var(--section-gap);
 }
 
 .card.fitViewport .managementControls {
