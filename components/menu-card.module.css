@@ -6,7 +6,7 @@
   max-width: 26rem;
   min-width: 0;
   margin-inline: auto;
-  color: #fff;
+  color: #000;
   text-align: center;
 }
 
@@ -30,7 +30,6 @@
   font-weight: 900;
   font-variant-numeric: tabular-nums;
   line-height: 1;
-  text-shadow: 0 3px 12px #0005;
 }
 
 .takeButton {
@@ -67,10 +66,8 @@
   width: 100%;
   aspect-ratio: 3 / 2;
   overflow: hidden;
-  border: 2px solid #ff9500;
   border-radius: 0.75rem;
   background: #ffffff0d;
-  box-shadow: 0 0 18px #ff950033;
 }
 
 .image {
@@ -142,11 +139,9 @@
   width: 100%;
   height: clamp(10rem, 26dvh, 17.5rem);
   overflow: hidden;
-  border: 2px solid #ffb23e;
   border-radius: 0.4rem;
   background: #ffffff03;
-  box-shadow: 0 0 12px #ff95001f;
-  text-align: left;
+  text-align: center;
 }
 
 .detailSection {
@@ -262,10 +257,6 @@
   background: #381d2f;
 }
 
-.detailSection + .detailSection {
-  border-top: 1px solid #ffb23e;
-}
-
 .detailSection h3 {
   font-size: 0.875rem;
   font-weight: 700;
@@ -274,10 +265,19 @@
 
 .detailSection p {
   margin-top: 0.5rem;
-  color: #ffffffe6;
+  color: #000;
   font-size: 0.875rem;
   line-height: 1.5;
   white-space: pre-line;
+}
+
+.description p {
+  color: #0b2957;
+}
+
+.description p,
+.card.fitViewport .description p {
+  margin-top: 0;
 }
 
 .takeButton:focus-visible,

@@ -124,8 +124,7 @@ export function MenuCard({
         <span>{item.name || "Nama menu akan ditampilkan di sini"}</span>
       </h2>
       <div className={styles.details}>
-        <section className={styles.detailSection} aria-label="Food Description" tabIndex={0}>
-          <h3>Food Description</h3>
+        <section className={`${styles.detailSection} ${styles.description}`} aria-label="Food Description" tabIndex={0}>
           <p>{item.note || "—"}</p>
         </section>
         <section className={styles.detailSection} aria-label="Nutrition Fact" tabIndex={0}>
