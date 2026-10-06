@@ -3,6 +3,7 @@ import { requireUserRole } from "@/lib/auth/guards";
 import { getSitesAction } from "./actions";
 import { CreateSiteForm } from "./create-site-form"; // Import the modal tool
 import { DeleteSiteForm } from "./delete-site-form";
+import { SiteBackgroundForm } from "./site-background-form";
 
 export const dynamic = "force-dynamic";
 
@@ -36,13 +37,14 @@ export default async function SiteManagementPage() {
                 <tr className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
                   <th className="p-4 pl-6">Unique Site Identification Hash</th>
                   <th className="p-4">Operational Location Name / Code</th>
+                  <th className="p-4">Site Background</th>
                   <th className="p-4 pr-6 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {sites.length === 0 ? (
                   <tr>
-                    <td colSpan={3} className="p-8 text-center text-slate-400 italic">
+                    <td colSpan={4} className="p-8 text-center text-slate-400 italic">
                       No operational sites have been registered to this network profile yet.
                     </td>
                   </tr>
@@ -60,6 +62,9 @@ export default async function SiteManagementPage() {
                       </td>
                       
                       {/* Danger Wipe Action */}
+                      <td className="p-4">
+                        <SiteBackgroundForm siteId={site.id} siteName={site.name} backgroundUrl={site.backgroundUrl} />
+                      </td>
                       <td className="p-4 pr-6 text-right">
                         <DeleteSiteForm siteId={site.id} />
                       </td>

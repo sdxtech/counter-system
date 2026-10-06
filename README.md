@@ -2,6 +2,9 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+For per-site dashboard background setup and the required Supabase migration,
+see [Site backgrounds](docs/site-backgrounds.md).
+
 First, run the development server:
 
 ```bash

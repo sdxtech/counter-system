@@ -7,21 +7,23 @@ import { MenuCarousel } from "./menu-carousel";
 import { StaffActionsMenu } from "./staff-actions-menu";
 import { TakeMenuProvider, useTakeMenuQueue } from "@/components/take-menu-provider";
 import type { MenuKeyBinding } from "@/lib/menu-keymap";
+import { SiteBackground } from "@/components/site-background";
 
 type StaffMenuDashboardProps = {
   items: MenuCardData[];
   keyBindings?: MenuKeyBinding[];
+  backgroundUrl?: string | null;
 };
 
-export function StaffMenuDashboard({ items, keyBindings }: StaffMenuDashboardProps) {
+export function StaffMenuDashboard({ items, keyBindings, backgroundUrl }: StaffMenuDashboardProps) {
   return (
     <TakeMenuProvider items={items} keyBindings={keyBindings}>
-      <StaffMenuDashboardContent items={items} />
+      <StaffMenuDashboardContent items={items} backgroundUrl={backgroundUrl} />
     </TakeMenuProvider>
   );
 }
 
-function StaffMenuDashboardContent({ items }: StaffMenuDashboardProps) {
+function StaffMenuDashboardContent({ items, backgroundUrl }: StaffMenuDashboardProps) {
   const [isFullMode, setIsFullMode] = useState(false);
   useEffect(() => {
     const elements = [document.documentElement, document.body];
@@ -49,7 +51,7 @@ function StaffMenuDashboardContent({ items }: StaffMenuDashboardProps) {
   return (
     <>
       <section className="fixed inset-0 overflow-hidden bg-[#0b0f23] text-white" inert={isFullMode}>
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,#0f0f23,#1a1a2e,#16213e)]" />
+        <SiteBackground url={backgroundUrl} />
 
         <StaffActionsMenu
           onFullMode={() => setIsFullMode(true)}
@@ -63,7 +65,7 @@ function StaffMenuDashboardContent({ items }: StaffMenuDashboardProps) {
 
       {isFullMode ? (
         <div className="fixed inset-0 z-40 overflow-hidden bg-[#0b0f23] text-white">
-          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,#0f0f23,#1a1a2e,#16213e)]" />
+          <SiteBackground url={backgroundUrl} />
           <div className="absolute inset-y-0 left-0 z-20 flex w-12 justify-center pt-4">
             <Button
               type="button"

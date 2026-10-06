@@ -4,6 +4,7 @@ import type { MenuCardData } from "@/components/menu-card";
 import { requireUserRole } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
 import { StaffMenuDashboard } from "./staff-menu-dashboard";
+import { SITE_BACKGROUND_BUCKET } from "@/lib/site-background";
 import type { MenuKeyBinding } from "@/lib/menu-keymap";
 
 export const dynamic = "force-dynamic";
@@ -120,6 +121,20 @@ async function getKeyBindings(siteId: string | null): Promise<MenuKeyBinding[]> 
   return data ?? [];
 }
 
+async function getBackgroundUrl(siteId: string | null): Promise<string | null> {
+  if (!siteId) return null;
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("sites")
+    .select("background_path").eq("id", siteId).maybeSingle();
+  if (error) {
+    console.error("Failed to load site background:", error.message);
+    return null;
+  }
+  return data?.background_path
+    ? supabase.storage.from(SITE_BACKGROUND_BUCKET).getPublicUrl(data.background_path).data.publicUrl
+    : null;
+}
+
 export default async function StaffPage() {
   const { role, siteId } = await requireUserRole(["staff", "superadmin"]);
 
@@ -129,7 +144,9 @@ export default async function StaffPage() {
     console.error("Failed to cleanup expired menus", error);
   }
 
-  const [menuItems, keyBindings] = await Promise.all([getMenuItems(siteId), getKeyBindings(siteId)]);
+  const [menuItems, keyBindings, backgroundUrl] = await Promise.all([
+    getMenuItems(siteId), getKeyBindings(siteId), getBackgroundUrl(siteId),
+  ]);
 
   return (
     <AppShell
@@ -139,7 +156,7 @@ export default async function StaffPage() {
       showHeader={false}
       showSidebar={false}
     >
-      <StaffMenuDashboard items={menuItems} keyBindings={keyBindings} />
+      <StaffMenuDashboard items={menuItems} keyBindings={keyBindings} backgroundUrl={backgroundUrl} />
     </AppShell>
   );
 }

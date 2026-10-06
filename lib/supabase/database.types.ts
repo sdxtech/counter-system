@@ -27,17 +27,20 @@ export type Database = {
         Row: {
           id: string;
           name: string;
+          background_path: string | null;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
           name: string;
+          background_path?: string | null;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           name?: string;
+          background_path?: string | null;
           updated_at?: string;
         };
         Relationships: [];

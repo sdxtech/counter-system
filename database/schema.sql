@@ -555,6 +555,18 @@ grant execute on function public.save_site_menu_keymap(text, jsonb) to authentic
 notify pgrst, 'reload schema';
 commit;
 
+-- Per-site dashboard backgrounds (202610050001_site_backgrounds.sql).
+begin;
+alter table public.sites add column if not exists background_path text;
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('site-backgrounds', 'site-backgrounds', true, 5242880, array['image/jpeg'])
+on conflict (id) do update set
+  public = excluded.public,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
+notify pgrst, 'reload schema';
+commit;
+
 
 -- Persistent numpad mappings for menu positions 1 through 6.
 begin;
